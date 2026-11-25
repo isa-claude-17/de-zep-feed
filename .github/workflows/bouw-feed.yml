@@ -1,0 +1,34 @@
+name: Bouw feed
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"   # elk kwartier (GitHub loopt soms een paar minuten achter)
+  workflow_dispatch:          # knop "Run workflow" om hem zelf te starten
+  push:
+    branches: [main]          # en meteen na elke wijziging
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  bouw:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pyyaml
+      - run: python bouw_feed.py
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - uses: actions/deploy-pages@v4

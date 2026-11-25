@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sportscherm preview</title>
+<style>
+  :root { --scherm-b: 480px; --scherm-h: 320px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 22px; padding: 24px; background: #d9d4cc; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .kast {
+    background: #1b1b1d; border-radius: 18px; padding: 18px 22px 18px 22px;
+    box-shadow: 0 30px 60px -20px rgba(0,0,0,.45), inset 0 0 0 2px #2a2a2e;
+    transform-origin: top center;
+  }
+  .scherm {
+    width: var(--scherm-b); height: var(--scherm-h); background: #0d1117; color: #e8eaed;
+    position: relative; overflow: hidden; border-radius: 2px;
+  }
+
+  /* bovenbalk */
+  .balk { height: 34px; display: flex; align-items: center; justify-content: space-between; padding: 0 12px;
+          border-bottom: 1px solid #1f2630; font-size: 13px; color: #9aa4b2; }
+  .balk .klok { font-size: 20px; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; letter-spacing: .5px; }
+  .balk .rechts { display: flex; gap: 10px; align-items: center; }
+  .wifi { width: 14px; height: 10px; display: inline-block; }
+
+  /* kaart */
+  .kaart { position: absolute; inset: 34px 0 0 0; padding: 10px 12px 12px; display: flex; flex-direction: column;
+           opacity: 0; transition: opacity .35s ease; }
+  .kaart.zichtbaar { opacity: 1; }
+  .kop { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .label { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 700; letter-spacing: .8px;
+           text-transform: uppercase; }
+  .label i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .teller { font-size: 12px; color: #6b7686; font-variant-numeric: tabular-nums; }
+  .lijst { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+  .lijst li { display: grid; grid-template-columns: 44px 1fr; gap: 6px; align-items: start; }
+  .lijst .wanneer { font-size: 11px; color: #7d8898; padding-top: 3px; font-variant-numeric: tabular-nums; }
+  .lijst .tekst { font-size: 15px; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .lijst li:first-child .tekst { font-weight: 600; color: #fff; }
+
+  /* uitspraak */
+  .uitspraak { justify-content: center; align-items: center; text-align: center; padding: 18px 34px 22px; }
+  .uitspraak .citaat { font-size: 24px; line-height: 1.3; font-weight: 600; color: #fff; font-family: Georgia, "Times New Roman", serif; }
+  .uitspraak .citaat::before { content: "“"; display: block; font-size: 54px; line-height: .6; color: #3a4452; margin-bottom: 4px; }
+  .uitspraak .wie { margin-top: 16px; display: flex; align-items: center; gap: 10px; font-size: 14px; color: #9aa4b2; }
+  .foto { width: 40px; height: 40px; border-radius: 50%; background: #263040; display: grid; place-items: center;
+          font-size: 14px; font-weight: 700; color: #c4ccd8; }
+  .uitspraak .soort { position: absolute; top: 10px; left: 12px; font-size: 11px; letter-spacing: .8px; text-transform: uppercase; color: #6b7686; }
+
+  .voortgang { position: absolute; left: 0; bottom: 0; height: 3px; width: 0; }
+
+  /* bediening (niet op het echte scherm) */
+  .bediening { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; font-size: 13px; color: #3d3a35; }
+  .bediening button { border: 0; background: #fff; color: #222; padding: 8px 12px; border-radius: 8px; font: inherit; cursor: pointer;
+                      box-shadow: 0 1px 2px rgba(0,0,0,.15); }
+  .bediening button.aan { background: #222; color: #fff; }
+  .noot { max-width: 560px; text-align: center; font-size: 12.5px; color: #5c574f; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<div class="kast" id="kast">
+  <div class="scherm" id="scherm">
+    <div class="balk">
+      <span id="datum">wo 25 nov</span>
+      <span class="rechts">
+        <span id="bijgewerkt" style="font-size:11px;color:#5d6877"></span>
+        <svg class="wifi" viewBox="0 0 14 10"><path d="M7 9.5l2-2.3a2.8 2.8 0 00-4 0zM3.4 5.4a5.2 5.2 0 017.2 0l1.4-1.6a7.3 7.3 0 00-10 0zM.6 2.3a9.6 9.6 0 0112.8 0L14 1.6A10.6 10.6 0 000 1.6z" fill="#7d8898"/></svg>
+        <span class="klok" id="klok">20:58</span>
+      </span>
+    </div>
+    <div id="kaarten"></div>
+    <div class="voortgang" id="voortgang"></div>
+  </div>
+</div>
+
+<div class="bediening">
+  <button id="vorige">◀</button>
+  <button id="pauze">Pauze</button>
+  <button id="volgende">▶</button>
+  <span style="width:10px"></span>
+  <button data-zoom="1">Ware grootte</button>
+  <button data-zoom="2" class="aan">2×</button>
+</div>
+<p class="noot">Preview van het 3,5 inch scherm (480 × 320 pixels). Kleuren en letters zijn een benadering;
+  op het echte bord gebruiken we een eigen lettertype. Klik op het scherm om naar de volgende kaart te gaan, zoals hij straks ook kan tikken.</p>
+
+<script>
+/* Voorbeelddata in precies hetzelfde formaat als feed.json.
+   Staat deze pagina naast een echte feed.json (op GitHub Pages), dan wordt die gebruikt. */
+const VOORBEELD = {"v":1,"bijgewerkt":1795636358,"kaarten":[
+{"type":"nieuws","id":"schaatsen","naam":"Schaatsen","kleur":"#4FC3F7","items":[
+{"t":"Natuurijsbanen geopend: marathonschaatsster verpulvert werelduurrecord","ts":1795510104},
+{"t":"Goud, goud en nog eens goud voor Daleman, schaatstalent is 'volwassener geworden'","ts":1795346809},
+{"t":"Italië viert feest met eerste medaille sinds 1998 op 500 meter, Stolz weer de sterkste","ts":1795335754},
+{"t":"Van 't Wout blijft ongenaakbaar op 1.000 meter, Huisman verrast met finaleplaats","ts":1795333854},
+{"t":"Daleman breidt winstreeks uit, opnieuw Nederlands podium op 500 meter","ts":1795329783}]},
+{"type":"nieuws","id":"wielrennen","naam":"Wielrennen","kleur":"#FFB300","items":[
+{"t":"Vollering op bezoek bij de paus: 'Beetje spannend, ik laat me verrassen'","ts":1795435729},
+{"t":"Onafhankelijk onderzoek naar angstcultuur bij Picnic-PostNL van start","ts":1795406478},
+{"t":"Brand moet zege aan indrukwekkende Italiaanse Casasola laten in zand van Lokeren","ts":1795271104},
+{"t":"Rondreis Vollering: voorbereidingen op 'LA 28' en via Pijnacker naar de paus","ts":1795198272},
+{"t":"37-jarige Sloveen Roglic zet wielerloopbaan voort bij NSN","ts":1795028670}]},
+{"type":"uitspraak","id":"uitspraak","naam":"Uitspraak van de dag","tekst":"Elk nadeel heb z'n voordeel.","wie":"Johan Cruijff","foto":"cruijff"}
+]};
+
+const DUUR = 9000;            // ms per kaart
+const UITSPRAAK_ELKE = 2;     // na elke 2 nieuwskaarten komt de uitspraak langs
+const DAGEN = ["zo","ma","di","wo","do","vr","za"];
+const MAANDEN = ["jan","feb","mrt","apr","mei","jun","jul","aug","sep","okt","nov","dec"];
+
+let feed = VOORBEELD, volgorde = [], plek = 0, gepauzeerd = false, timer, start;
+
+function nu() { return feed === VOORBEELD ? feed.bijgewerkt * 1000 : Date.now(); }
+
+function hoeLangGeleden(ts) {
+  const min = Math.max(0, Math.round((nu() - ts * 1000) / 60000));
+  if (min < 60) return min + " min";
+  const u = Math.round(min / 60);
+  if (u < 24) return u + " uur";
+  const d = Math.round(u / 24);
+  return d === 1 ? "gisteren" : d + " dgn";
+}
+
+function maakVolgorde() {
+  const nieuws = feed.kaarten.filter(k => k.type === "nieuws");
+  const quote = feed.kaarten.find(k => k.type === "uitspraak");
+  volgorde = [];
+  nieuws.forEach((k, i) => {
+    volgorde.push(k);
+    if (quote && (i + 1) % UITSPRAAK_ELKE === 0) volgorde.push(quote);
+  });
+  if (quote && !volgorde.includes(quote)) volgorde.push(quote);
+}
+
+function initialen(naam) { return naam.split(" ").filter(w => w[0] === w[0].toUpperCase()).map(w => w[0]).slice(0,2).join(""); }
+
+function teken() {
+  const k = volgorde[plek], box = document.getElementById("kaarten");
+  const nieuwsKaarten = volgorde.filter(x => x.type === "nieuws");
+  let html;
+  if (k.type === "nieuws") {
+    const nr = nieuwsKaarten.indexOf(k) + 1;
+    html = `<div class="kaart">
+      <div class="kop"><span class="label" style="color:${k.kleur}"><i style="background:${k.kleur}"></i>${k.naam}</span>
+      <span class="teller">${nr}/${nieuwsKaarten.length}</span></div>
+      <ul class="lijst">${k.items.slice(0,4).map(it =>
+        `<li><span class="wanneer">${hoeLangGeleden(it.ts)}</span><span class="tekst">${it.t}</span></li>`).join("")}</ul></div>`;
+  } else {
+    html = `<div class="kaart uitspraak"><span class="soort">${k.naam}</span>
+      <div class="citaat">${k.tekst}</div>
+      <div class="wie"><span class="foto">${initialen(k.wie)}</span>${k.wie}</div></div>`;
+  }
+  box.innerHTML = html;
+  requestAnimationFrame(() => box.firstElementChild.classList.add("zichtbaar"));
+  document.getElementById("voortgang").style.background = k.kleur || "#fff";
+  start = performance.now();
+}
+
+function volgende(stap = 1) { plek = (plek + stap + volgorde.length) % volgorde.length; teken(); }
+
+function lus(t) {
+  if (!gepauzeerd) {
+    const deel = Math.min(1, (t - start) / DUUR);
+    document.getElementById("voortgang").style.width = (deel * 100) + "%";
+    if (deel >= 1) volgende();
+  } else start = t - (parseFloat(document.getElementById("voortgang").style.width) / 100) * DUUR;
+  requestAnimationFrame(lus);
+}
+
+function klok() {
+  const d = new Date();
+  document.getElementById("klok").textContent = d.toLocaleTimeString("nl-NL", {hour:"2-digit", minute:"2-digit"});
+  document.getElementById("datum").textContent = `${DAGEN[d.getDay()]} ${d.getDate()} ${MAANDEN[d.getMonth()]}`;
+}
+
+function zoom(f) {
+  document.getElementById("kast").style.transform = `scale(${f})`;
+  document.getElementById("kast").style.marginBottom = `${(f - 1) * 356}px`;
+  document.querySelectorAll("[data-zoom]").forEach(b => b.classList.toggle("aan", +b.dataset.zoom === f));
+}
+
+async function laad() {
+  try {
+    const r = await fetch("feed.json", {cache: "no-store"});
+    if (r.ok) feed = await r.json();
+  } catch (e) { /* geen echte feed: voorbeeld blijft staan */ }
+  const b = new Date(feed.bijgewerkt * 1000);
+  document.getElementById("bijgewerkt").textContent = feed === VOORBEELD ? "voorbeeld" :
+    "bijgew. " + b.toLocaleTimeString("nl-NL", {hour:"2-digit", minute:"2-digit"});
+  maakVolgorde(); plek = 0; teken();
+}
+
+document.getElementById("vorige").onclick = () => volgende(-1);
+document.getElementById("volgende").onclick = () => volgende(1);
+document.getElementById("scherm").onclick = () => volgende(1);
+document.getElementById("pauze").onclick = e => { gepauzeerd = !gepauzeerd; e.target.textContent = gepauzeerd ? "Verder" : "Pauze"; e.target.classList.toggle("aan", gepauzeerd); };
+document.querySelectorAll("[data-zoom]").forEach(b => b.onclick = () => zoom(+b.dataset.zoom));
+
+klok(); setInterval(klok, 10000);
+zoom(window.innerWidth > 1100 ? 2 : 1);
+laad(); requestAnimationFrame(lus);
+</script>
+</body>
+</html>

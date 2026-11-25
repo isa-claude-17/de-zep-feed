@@ -1,0 +1,55 @@
+# ─────────────────────────────────────────────────────────────
+#  Bronnen voor het sportscherm
+#  Een nieuwe bron toevoegen = een blokje hieronder kopiëren en aanpassen.
+#  Tijdelijk uitzetten = aan: false
+# ─────────────────────────────────────────────────────────────
+
+instellingen:
+  max_koppen_per_bron: 5     # hoeveel koppen per kaart
+  max_tekens_kop: 90         # langere koppen worden ingekort met …
+  max_leeftijd_dagen: 14     # oudere berichten laten we weg
+
+bronnen:
+
+  - id: schaatsen
+    type: rss
+    naam: Schaatsen
+    kleur: "#4FC3F7"         # lichtblauw
+    url: https://feeds.nos.nl/nossportschaatsen
+    aan: true
+
+  - id: wielrennen
+    type: rss
+    naam: Wielrennen
+    kleur: "#FFB300"         # geel/oranje
+    url: https://feeds.nos.nl/nossportwielrennen
+    aan: true
+
+  # Voorbeelden voor later, staan nog uit:
+  - id: voetbal
+    type: rss
+    naam: Voetbal
+    kleur: "#E53935"
+    url: https://feeds.nos.nl/nosvoetbal
+    aan: false
+
+  - id: f1
+    type: rss
+    naam: Formule 1
+    kleur: "#EF5350"
+    url: https://feeds.nos.nl/nossportformule1
+    aan: false
+
+  - id: casino
+    type: rss
+    naam: iGaming
+    kleur: "#AB47BC"
+    url: https://www.casino.org/news/feed/
+    aan: false
+
+  - id: uitspraak
+    type: uitspraken
+    naam: Uitspraak van de dag
+    kleur: "#F5F5F5"
+    bestand: uitspraken.csv  # later kan hier ook een url naar je Google Sheet staan
+    aan: true
