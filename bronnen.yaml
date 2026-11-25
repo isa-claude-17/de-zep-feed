@@ -59,5 +59,7 @@ bronnen:
     type: uitspraken
     naam: Uitspraak van de dag
     kleur: "#F5F5F5"
-    bestand: uitspraken.csv  # later kan hier ook een url naar je Google Sheet staan
+    # Google Sheet "Sportscherm – uitspraken van de dag" (eerste tabblad, als CSV)
+    url: https://docs.google.com/spreadsheets/d/11e4tsVDh_-3qzh9QFzE5Clhpy5-zk5zEwQG-73yZY0w/export?format=csv&gid=0
+    bestand: uitspraken.csv  # reserve als de Sheet even niet bereikbaar is
     aan: true

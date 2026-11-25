@@ -73,12 +73,25 @@ def rss(bron, inst):
     }
 
 
-def uitspraken(bron, inst):
-    adres = bron.get("url") or bron["bestand"]
+def lees_uitspraken(adres):
     tekst = haal_op(adres).decode("utf-8-sig")
-    rijen = [r for r in csv.DictReader(io.StringIO(tekst)) if r.get("tekst")]
+    rijen = [r for r in csv.DictReader(io.StringIO(tekst)) if (r.get("tekst") or "").strip()]
     if not rijen:
-        raise ValueError("geen uitspraken gevonden")
+        raise ValueError(f"geen uitspraken gevonden in {adres[:60]}")
+    return rijen
+
+
+def uitspraken(bron, inst):
+    # eerst de Google Sheet; lukt dat niet, dan het reservebestand in de repo
+    rijen = None
+    if bron.get("url"):
+        try:
+            rijen = lees_uitspraken(bron["url"])
+            print(f"    {len(rijen)} uitspraken uit de Google Sheet")
+        except Exception as e:
+            print(f"    Google Sheet niet bereikbaar ({e}), reservebestand gebruikt")
+    if rijen is None:
+        rijen = lees_uitspraken(bron["bestand"])
     # elke dag een andere, maar wel de hele dag dezelfde
     dagnummer = dt.date.today().toordinal()
     r = rijen[dagnummer % len(rijen)]
