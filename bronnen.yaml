@@ -25,13 +25,21 @@ bronnen:
     url: https://feeds.nos.nl/nossportwielrennen
     aan: true
 
-  # Voorbeelden voor later, staan nog uit:
   - id: voetbal
     type: rss
     naam: Voetbal
     kleur: "#E53935"
     url: https://feeds.nos.nl/nosvoetbal
-    aan: false
+    aan: true
+
+  - id: nieuws
+    type: rss
+    naam: Nieuws
+    kleur: "#90A4AE"
+    url: https://feeds.nos.nl/nosnieuwsalgemeen
+    aan: true
+
+  # Voorbeelden voor later, staan nog uit:
 
   - id: f1
     type: rss
