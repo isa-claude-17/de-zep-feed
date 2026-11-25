@@ -16,13 +16,9 @@
     box-shadow: 0 30px 60px -20px rgba(0,0,0,.45), inset 0 0 0 2px #2a2a2e;
     transform-origin: top center;
   }
-  /* ── thema's: alleen deze kleuren verschillen ── */
+  /* ── kleuren: thema Marine (gekozen 25 nov) ── */
   .scherm[data-thema="marine"] { --bg:#0F1C2E; --balk:#0B1626; --lijn:#1C2C42; --tekst:#DCE4EE; --sterk:#FFFFFF;
                                  --gedimd:#7F90A8; --zacht:#55657D; --accent:#F2B84B; --vlak:#1A2B42; }
-  .scherm[data-thema="woud"]   { --bg:#10261E; --balk:#0C1E17; --lijn:#1E3B2F; --tekst:#DDE8E1; --sterk:#FFFFFF;
-                                 --gedimd:#829C8F; --zacht:#587266; --accent:#F0A48A; --vlak:#1B3A2E; }
-  .scherm[data-thema="petrol"] { --bg:#0E272E; --balk:#0A1F25; --lijn:#1B3A42; --tekst:#DAE7EA; --sterk:#FFFFFF;
-                                 --gedimd:#7E9AA1; --zacht:#557178; --accent:#6FDDC4; --vlak:#183840; }
 
   .scherm {
     width: var(--scherm-b); height: var(--scherm-h); background: var(--bg); color: var(--tekst);
@@ -91,10 +87,6 @@
   <button id="vorige">◀</button>
   <button id="pauze">Pauze</button>
   <button id="volgende">▶</button>
-  <span style="width:10px"></span>
-  <button data-thema="marine" class="aan">Marine</button>
-  <button data-thema="woud">Woud</button>
-  <button data-thema="petrol">Petrol</button>
   <span style="width:10px"></span>
   <button data-zoom="1">Ware grootte</button>
   <button data-zoom="2" class="aan">2×</button>
@@ -212,14 +204,6 @@ document.getElementById("volgende").onclick = () => volgende(1);
 document.getElementById("scherm").onclick = () => volgende(1);
 document.getElementById("pauze").onclick = e => { gepauzeerd = !gepauzeerd; e.target.textContent = gepauzeerd ? "Verder" : "Pauze"; e.target.classList.toggle("aan", gepauzeerd); };
 document.querySelectorAll("[data-zoom]").forEach(b => b.onclick = () => zoom(+b.dataset.zoom));
-
-function thema(naam) {
-  document.getElementById("scherm").dataset.thema = naam;
-  document.querySelectorAll("button[data-thema]").forEach(b => b.classList.toggle("aan", b.dataset.thema === naam));
-  try { localStorage.setItem("sportscherm-thema", naam); } catch (e) {}
-}
-document.querySelectorAll("button[data-thema]").forEach(b => b.onclick = () => thema(b.dataset.thema));
-try { const t = localStorage.getItem("sportscherm-thema"); if (t) thema(t); } catch (e) {}
 
 klok(); setInterval(klok, 10000);
 zoom(window.innerWidth > 1100 ? 2 : 1);
