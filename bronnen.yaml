@@ -15,9 +15,9 @@ bronnen:
   - id: weer
     type: weer
     naam: Weer
-    plaats: Den Haag
-    lat: 52.08
-    lon: 4.30
+    plaats: Koudekerk aan den Rijn
+    lat: 52.21
+    lon: 4.66
     aan: true
 
   - id: schaatsen
