@@ -74,17 +74,18 @@ def rss(bron, inst):
     if overgeslagen:
         print(f"    {overgeslagen} bericht(en) overgeslagen op categorie")
     items.sort(key=lambda i: i["ts"], reverse=True)
+    koppen = bron.get("koppen", inst.get("koppen", inst["max_koppen_per_bron"]))
     kaart = {
         "type": "nieuws",
         "id": bron["id"],
         "naam": bron["naam"],
         "kleur": bron.get("kleur", "#FFFFFF"),
-        "items": items[: bron.get("koppen", inst["max_koppen_per_bron"])],
+        "items": items[: int(koppen)],
+        "koppen": int(koppen),
     }
-    # optioneel: eigen indeling voor deze kaart (het bord gebruikt anders 4 koppen)
-    for veld in ("koppen", "regels"):
-        if veld in bron:
-            kaart[veld] = int(bron[veld])
+    regels = bron.get("regels", inst.get("regels"))
+    if regels:
+        kaart["regels"] = int(regels)
     return kaart
 
 

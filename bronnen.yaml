@@ -5,8 +5,10 @@
 # ─────────────────────────────────────────────────────────────
 
 instellingen:
-  max_koppen_per_bron: 5     # hoeveel koppen per kaart
-  max_tekens_kop: 90         # langere koppen worden ingekort met …
+  koppen: 4                  # hoeveel koppen per nieuwskaart (per bron te overschrijven)
+  regels: 2                  # hoeveel regels per kop op het scherm (per bron te overschrijven)
+  max_koppen_per_bron: 5     # reserve als  koppen  hierboven ontbreekt
+  max_tekens_kop: 110        # langere koppen worden ingekort met …
   max_leeftijd_dagen: 14     # oudere berichten laten we weg
 
 bronnen:

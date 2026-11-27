@@ -387,7 +387,7 @@ function teken() {
     const n = vandaag(k);
     const sub = n ? `<b>${n}</b>nieuw vandaag` : `<b>${geleden(k.items[0]?.ts || 0)}</b>laatste bericht`;
     html = `${lagen(t)}<div class="titelrij"><span class="titel">${esc(k.naam)}</span><span class="sub">${sub}</span></div>
-      <ul${k.koppen || k.regels ? ` class="ruim" style="--regels:${k.regels || 3}"` : ""}>${k.items.slice(0, k.koppen || 4).map(it => `<li><span class="wanneer">${geleden(it.ts)}</span><span class="kop-t">${esc(it.t)}</span></li>`).join("")}</ul>`;
+      <ul class="ruim" style="--regels:${k.regels || 2}">${k.items.slice(0, k.koppen || 4).map(it => `<li><span class="wanneer">${geleden(it.ts)}</span><span class="kop-t">${esc(it.t)}</span></li>`).join("")}</ul>`;
   }
   box.innerHTML = `<div class="kaart" style="${css}">${html}</div>`;
   scherm.style.setProperty("--acc", t.acc);
