@@ -25,6 +25,12 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install pyyaml
+      - name: Haal de vorige feed.json op
+        # nodig voor kaarten die we maar één keer per dag verversen (opdezedag), en als
+        # reserve als een bron even uitvalt. Bestaat hij nog niet, dan begint hij opnieuw.
+        run: |
+          mkdir -p site
+          curl -fsSL https://isa-claude-17.github.io/de-zep-feed/feed.json -o site/feed.json || echo "geen vorige feed.json"
       - run: python bouw_feed.py
       - name: Toon feed.json in het logboek
         run: python -m json.tool site/feed.json

@@ -69,6 +69,40 @@ bronnen:
     zonder_categorie: [Advertorial, Campagne]
     aan: true
 
+  # Op deze dag (onthisday.com, Engelstalig). Elke feed heeft één bericht per dag, dus de server
+  # haalt hem maar één keer per dag op. Regels met een Europees woord (of Nederland/België)
+  # komen eerst, de rest vult aan; zet  europa: false  om dat uit te zetten.
+  # De volgorde van de schermen is de volgorde in dit bestand.
+  - id: gebeurd
+    type: opdezedag
+    soort: gebeurd
+    naam: Gebeurd
+    url: https://www.onthisday.com/rss/historical-events.xml
+    koppen: 5
+    regels: 2
+    max_tekens_kop: 105
+    aan: true
+
+  - id: geboren
+    type: opdezedag
+    soort: geboren
+    naam: Geboren
+    url: https://www.onthisday.com/rss/famous-birthdays.xml
+    koppen: 5
+    regels: 2
+    max_tekens_kop: 105
+    aan: true
+
+  - id: overleden
+    type: opdezedag
+    soort: overleden
+    naam: Overleden
+    url: https://www.onthisday.com/rss/famous-deaths.xml
+    koppen: 5
+    regels: 2
+    max_tekens_kop: 105
+    aan: true
+
   # Voorbeelden voor later, staan nog uit:
 
   - id: f1

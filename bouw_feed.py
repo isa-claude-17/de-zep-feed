@@ -14,8 +14,10 @@ Een extra RSS-feed toevoegen hoeft alleen in bronnen.yaml.
 
 import csv
 import datetime as dt
+import html
 import io
 import json
+import re
 import sys
 import time
 import urllib.request
@@ -79,6 +81,97 @@ def rss(bron, inst):
         "items": items[: bron.get("koppen", inst["max_koppen_per_bron"])],
     }
     # optioneel: eigen indeling voor deze kaart (het bord gebruikt anders 4 koppen)
+    for veld in ("koppen", "regels"):
+        if veld in bron:
+            kaart[veld] = int(bron[veld])
+    return kaart
+
+
+# ── "Op deze dag" (onthisday.com): gebeurd, geboren, overleden ──
+
+# Woorden die op Europa wijzen. Een regel met zo'n woord komt eerder op het scherm.
+EUROPA = re.compile(
+    r"\b(?:british|britain|english|england|welsh|wales|scotland|scottish|irish|ireland|"
+    r"dutch|netherlands|belgi|flemish|flanders|german|france|french|ital|spain|spanish|"
+    r"swiss|switzerland|austria|swed|danish|denmark|norw|finnish|finland|polish|poland|"
+    r"hungar|czech|slovak|ukrain|russia|soviet|portug|greek|greece|europe|london|paris|"
+    r"berlin|rome|vienna|brussels|madrid|bavaria|prussia|holy roman)",
+    re.I,
+)
+# Nederland en België tellen extra mee
+THUIS = re.compile(
+    r"\b(?:dutch|netherlands|belgi|flemish|flanders|amsterdam|rotterdam|the hague|utrecht|antwerp|brussels)",
+    re.I,
+)
+REGEL = re.compile(
+    r"<b>\s*<a[^>]*>\s*([^<]+?)\s*</a>\s*</b>\s*[-–]\s*(.*?)(?=<br\s*/?>|</p>|<b>|$)",
+    re.S | re.I,
+)
+
+
+def europa_score(tekst):
+    return (1 if EUROPA.search(tekst) else 0) + (2 if THUIS.search(tekst) else 0)
+
+
+def lees_regels(beschrijving):
+    """Haalt (jaar, tekst) uit de HTML van een bericht."""
+    uit = []
+    for jaar, tekst in REGEL.findall(beschrijving):
+        tekst = " ".join(html.unescape(re.sub(r"<[^>]+>", "", tekst)).split())
+        if tekst:
+            uit.append((jaar.strip(), tekst))
+    return uit
+
+
+def schoon(soort, tekst):
+    """Korter maken: bij geboortes weg met geboorteplaats en sterfjaar."""
+    if soort == "geboren":
+        tekst = re.sub(r"\s*\(d\.\s*\d{3,4}\)\s*$", "", tekst)
+        tekst = re.sub(r",?\s*born (?:in|on|at) .*$", "", tekst, flags=re.I)
+    return tekst.strip(" ,")
+
+
+def moet_ophalen(vorige, nu=None):
+    """De site maakt elke dag rond 05:05 UTC een nieuw bericht. Vaker ophalen is zinloos."""
+    nu = nu or dt.datetime.now(dt.timezone.utc)
+    if not vorige or not vorige.get("ts"):
+        return True
+    gemaakt = dt.datetime.fromtimestamp(vorige["ts"], dt.timezone.utc)
+    if gemaakt.date() == nu.date():
+        return False                          # kaart van vandaag staat er al
+    return (nu.hour, nu.minute) >= (5, 15)    # eerder is er nog niets nieuws
+
+
+def opdezedag(bron, inst):
+    vorige = inst.get("_oud", {}).get(bron["id"])
+    if not moet_ophalen(vorige):
+        print("    kaart van vandaag staat er al, niet opnieuw opgehaald")
+        return vorige
+    root = ET.fromstring(haal_op(bron["url"]))
+    item = root.find(".//item")
+    if item is None:
+        raise ValueError("geen bericht in de feed")
+    datum = item.findtext("pubDate")
+    ts = int(parsedate_to_datetime(datum).timestamp()) if datum else int(time.time())
+    regels = lees_regels(item.findtext("description") or "")
+    if not regels:
+        raise ValueError("geen regels gevonden in het bericht")
+    soort = bron.get("soort", "")
+    n = bron.get("koppen", 5)
+    # eerst de Europese regels (stabiel: bij gelijke score blijft de volgorde van de site),
+    # daarna op jaartal zetten zoals in de feed
+    keuze = list(enumerate(regels))
+    if bron.get("europa", True):
+        keuze.sort(key=lambda x: (-europa_score(x[1][1]), x[0]))
+    keuze = sorted(keuze[:n], key=lambda x: x[0])
+    max_tekens = bron.get("max_tekens_kop", inst["max_tekens_kop"])
+    kaart = {
+        "type": "lijst",
+        "id": bron["id"],
+        "naam": bron["naam"],
+        "ts": ts,
+        "items": [{"j": j, "t": kort_in(schoon(soort, t), max_tekens)} for _, (j, t) in keuze],
+    }
     for veld in ("koppen", "regels"):
         if veld in bron:
             kaart[veld] = int(bron[veld])
@@ -162,6 +255,7 @@ OPHALERS = {
     "rss": rss,
     "uitspraken": uitspraken,
     "weer": weer,
+    "opdezedag": opdezedag,
 }
 
 
@@ -178,6 +272,8 @@ def main(config_pad="bronnen.yaml"):
             oud = {k["id"]: k for k in json.loads(UIT.read_text())["kaarten"]}
         except Exception:
             pass
+
+    inst["_oud"] = oud      # sommige bronnen (opdezedag) hergebruiken de vorige kaart
 
     kaarten, fouten = [], 0
     for bron in config["bronnen"]:
