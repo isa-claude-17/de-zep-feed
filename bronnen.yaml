@@ -11,6 +11,15 @@ instellingen:
 
 bronnen:
 
+  # Weer via Open-Meteo (gratis, zonder sleutel). Plaats en coördinaten hier aanpassen.
+  - id: weer
+    type: weer
+    naam: Weer
+    plaats: Den Haag
+    lat: 52.08
+    lon: 4.30
+    aan: true
+
   - id: schaatsen
     type: rss
     naam: Schaatsen

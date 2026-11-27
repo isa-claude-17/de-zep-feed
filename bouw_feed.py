@@ -105,9 +105,51 @@ def uitspraken(bron, inst):
     }
 
 
+def bouw_weer(data, bron):
+    """Maakt van het antwoord van Open-Meteo een kleine weerkaart."""
+    nu, dag = data["current"], data["daily"]
+    dagen = []
+    for i in range(1, 4):                     # morgen, overmorgen en de dag daarna
+        d = dt.date.fromisoformat(dag["time"][i])
+        dagen.append({
+            "d": (d.weekday() + 1) % 7,       # 0 = zondag, zoals JavaScript
+            "c": int(dag["weather_code"][i]),
+            "max": round(dag["temperature_2m_max"][i]),
+            "min": round(dag["temperature_2m_min"][i]),
+        })
+    return {
+        "type": "weer",
+        "id": bron["id"],
+        "naam": bron["naam"],
+        "plaats": bron["plaats"],
+        "nu": {
+            "t": round(nu["temperature_2m"]),
+            "voelt": round(nu["apparent_temperature"]),
+            "c": int(nu["weather_code"]),
+            "wind": round(nu["wind_speed_10m"]),
+            "kans": int(dag["precipitation_probability_max"][0] or 0),
+            "max": round(dag["temperature_2m_max"][0]),
+            "min": round(dag["temperature_2m_min"][0]),
+        },
+        "dagen": dagen,
+    }
+
+
+def weer(bron, inst):
+    url = (
+        "https://api.open-meteo.com/v1/forecast"
+        f"?latitude={bron['lat']}&longitude={bron['lon']}"
+        "&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m"
+        "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max"
+        "&timezone=Europe%2FAmsterdam&forecast_days=4&wind_speed_unit=kmh"
+    )
+    return bouw_weer(json.loads(haal_op(url)), bron)
+
+
 OPHALERS = {
     "rss": rss,
     "uitspraken": uitspraken,
+    "weer": weer,
 }
 
 
