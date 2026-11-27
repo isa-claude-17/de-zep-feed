@@ -6,13 +6,13 @@
 <title>Sportscherm preview</title>
 <style>
   /*
-   VOICE   rustig maar met sfeer: elk onderwerp een eigen gloed, nooit druk
-   IDEA    een bureau-widget die per onderwerp van kleur ademt
+   VOICE   rustig met karakter: elk onderwerp herkenbaar aan kleur en tekening
+   IDEA    een bureauwidget met per sport een eigen 'ondergrond' (ijsbaan, weg, veld, krant, heelal)
    PICTURE het 480x320 scherm zelf, groot in beeld
-   COLOUR  per onderwerp een eigen basis + gloed (ijs, gele trui, gras, krant, ruimte, avondrood)
-   TYPE    systeemletter, grote koppen, kleine labels
+   COLOUR  per onderwerp een basis + gloed; de band bovenin fel, de rest donker en doorschijnend
+   LAYOUT  band 78px met klok en titel, daaronder 4 koppen
   */
-  :root { --b: 480px; --h: 320px; }
+  :root { --b: 480px; --h: 320px; --band: 78px; }
   * { box-sizing: border-box; margin: 0; padding: 0; min-width: 0; }
   body { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
          gap: 20px; padding: 24px 12px; background: #d9d4cc; color: #2b2925;
@@ -20,85 +20,57 @@
   .kast { background: #151517; border-radius: 18px; padding: 18px 22px; transform-origin: top center;
           box-shadow: 0 30px 60px -20px rgba(0,0,0,.45), inset 0 0 0 2px #262629; }
   .scherm { width: var(--b); height: var(--h); position: relative; overflow: hidden; border-radius: 2px;
-            background: #07080b; color: #fff; }
+            background: #07080b; color: #fff; cursor: pointer; }
 
-  /* ── bovenbalk (gedeeld) ── */
-  .balk { position: absolute; z-index: 5; inset: 0 0 auto 0; height: 30px; display: flex; align-items: center;
-          justify-content: space-between; padding: 0 12px; font-size: 12px; color: rgba(255,255,255,.6); }
-  .balk .klok { font-size: 17px; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; }
-  .balk .rechts { display: flex; gap: 9px; align-items: center; }
-  .balk .klein { font-size: 10.5px; color: rgba(255,255,255,.4); }
-  .wifi { width: 13px; height: 9px; fill: rgba(255,255,255,.55); }
-
-  .kaart { position: absolute; inset: 0; opacity: 0; transition: opacity .6s ease; }
+  /* ── kaart: lagen van onder naar boven ── */
+  .kaart { position: absolute; inset: 0; opacity: 0; transition: opacity .6s ease; background: var(--base); }
   .kaart.zichtbaar { opacity: 1; }
-  .motief { position: absolute; color: var(--acc); pointer-events: none; }
-  .wanneer { font-size: 10.5px; color: rgba(255,255,255,.55); font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .kop-t { line-height: 1.22; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .voortgang { position: absolute; z-index: 6; left: 0; bottom: 0; height: 2px; width: 0; background: var(--acc, #fff); opacity: .7; }
+  /* 1. zachte gloed over het hele scherm */
+  .kaart::before { content: ""; position: absolute; inset: 0;
+      background: radial-gradient(90% 70% at 80% 0%, color-mix(in srgb, var(--g2) 55%, transparent), transparent 75%); }
+  /* 2. de tekening over het hele scherm */
+  .tekening { position: absolute; inset: 0; width: 100%; height: 100%; color: var(--lijn); }
+  /* 3. de felle band bovenin, half doorzichtig zodat de tekening doorloopt */
+  .band { position: absolute; inset: 0 0 auto 0; height: var(--band);
+      background: linear-gradient(100deg, color-mix(in srgb, var(--g2) 92%, transparent) 0%, color-mix(in srgb, var(--g1) 82%, transparent) 100%);
+      box-shadow: 0 1px 0 rgba(255,255,255,.18), 0 8px 24px -8px color-mix(in srgb, var(--g1) 60%, transparent); }
+  .band::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.18), transparent 60%); }
+  .tekening.fel { -webkit-mask: linear-gradient(#000 0 var(--band), transparent var(--band)); mask: linear-gradient(#000 0 var(--band), transparent var(--band));
+      color: rgba(255,255,255,.42); }
+  /* 4. doorschijnende laag onder de tekst */
+  .inhoudlaag { position: absolute; inset: var(--band) 0 0 0;
+      background: linear-gradient(180deg, color-mix(in srgb, var(--base) 20%, transparent), color-mix(in srgb, var(--base) 45%, transparent)); }
 
-  /* ════ LAYOUT 1: GLOED ════ */
-  .gloed .kaart { background:
-      radial-gradient(120% 95% at 88% 30%, var(--g1) 0%, var(--g2) 38%, var(--base) 78%); }
-  .gloed .kaart::after { content: ""; position: absolute; inset: 0;
-      background: radial-gradient(140% 120% at 50% 50%, transparent 55%, rgba(0,0,0,.55) 100%); }
-  .gloed .motief { right: -18px; top: 14px; width: 230px; height: 230px; opacity: .22; }
-  .gloed .inhoud { position: relative; z-index: 2; padding: 38px 16px 12px; height: 100%; display: flex; flex-direction: column; }
-  .gloed .titel { font-size: 26px; font-weight: 800; letter-spacing: -.3px; line-height: 1; }
-  .gloed .sub { font-size: 12px; color: var(--acc); margin-top: 3px; font-weight: 600; }
-  .gloed ul { list-style: none; margin-top: auto; display: flex; flex-direction: column; gap: 9px; }
-  .gloed li { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: baseline; }
-  .gloed li .kop-t { font-size: 14px; color: rgba(255,255,255,.86); -webkit-line-clamp: 1; }
-  .gloed li:first-child .kop-t { font-size: 17px; font-weight: 700; color: #fff; -webkit-line-clamp: 2; }
-  .gloed li:first-child { padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,.18); }
+  /* ── band-inhoud ── */
+  .boven { position: absolute; z-index: 3; inset: 0 0 auto 0; height: 26px; display: flex; align-items: center;
+           justify-content: space-between; padding: 0 12px; font-size: 11.5px; color: rgba(255,255,255,.78); }
+  .boven .klok { font-size: 16px; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; }
+  .boven .rechts { display: flex; gap: 8px; align-items: center; }
+  .boven .klein { font-size: 10px; color: rgba(255,255,255,.55); }
+  .wifi { width: 13px; height: 9px; fill: rgba(255,255,255,.75); }
+  .titelrij { position: absolute; z-index: 3; left: 14px; right: 14px; top: 28px; height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .titel { font-size: 29px; font-weight: 800; letter-spacing: -.5px; line-height: 1; text-shadow: 0 1px 10px rgba(0,0,0,.25); }
+  .sub { font-size: 11.5px; font-weight: 650; color: rgba(255,255,255,.9); text-align: right; line-height: 1.25; white-space: nowrap; }
+  .sub b { display: block; font-size: 18px; font-weight: 750; color: #fff; }
 
-  /* ════ LAYOUT 2: TEGEL ════ */
-  .tegel .kaart { background: linear-gradient(180deg, #0b0d12, #07080b); }
-  .tegel .inhoud { position: absolute; inset: 34px 10px 10px 10px; display: grid; grid-template-columns: 148px 1fr; gap: 12px; }
-  .tegel .blok { position: relative; overflow: hidden; border-radius: 16px; padding: 12px;
-      background: radial-gradient(110% 80% at 50% 62%, var(--g1) 0%, var(--g2) 45%, var(--base) 100%);
-      display: flex; flex-direction: column; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
-  .tegel .blok .titel { font-size: 15px; font-weight: 700; line-height: 1.1; position: relative; z-index: 2; }
-  .tegel .blok .sub { font-size: 11px; color: rgba(255,255,255,.62); position: relative; z-index: 2; }
-  .tegel .blok .groot { margin: auto 0; text-align: center; font-size: 46px; font-weight: 300; line-height: 1; position: relative; z-index: 2;
-      font-variant-numeric: tabular-nums; }
-  .tegel .quote .blok .groot { font-family: Georgia, serif; font-size: 96px; font-weight: 700; line-height: .7; opacity: .9; }
-  .tegel .blok .groot small { display: block; font-size: 11px; font-weight: 500; color: rgba(255,255,255,.7); margin-top: 4px; letter-spacing: .3px; }
-  .tegel .blok .voet { font-size: 10.5px; color: rgba(255,255,255,.6); position: relative; z-index: 2; }
-  .tegel .motief { inset: 0; width: 100%; height: 100%; opacity: .28; }
-  .tegel ul { list-style: none; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
-  .tegel li { display: flex; flex-direction: column; gap: 2px; padding-left: 10px; border-left: 2px solid rgba(255,255,255,.1); }
-  .tegel li:first-child { border-left-color: var(--acc); }
-  .tegel li .kop-t { font-size: 14px; color: rgba(255,255,255,.82); }
-  .tegel li:first-child .kop-t { font-size: 15.5px; font-weight: 650; color: #fff; }
+  /* ── koppen ── */
+  ul { list-style: none; position: absolute; z-index: 3; inset: calc(var(--band) + 6px) 14px 8px 14px;
+       display: flex; flex-direction: column; justify-content: center; gap: 8px; }
+  li { display: grid; grid-template-columns: 44px 1fr; gap: 8px; align-items: baseline; }
+  li + li { padding-top: 8px; border-top: 1px solid rgba(255,255,255,.09); }
+  .wanneer { font-size: 10.5px; font-weight: 600; color: var(--acc); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .kop-t { font-size: 14px; line-height: 1.22; color: rgba(255,255,255,.84); display: -webkit-box; -webkit-line-clamp: 1;
+           -webkit-box-orient: vertical; overflow: hidden; text-shadow: 0 1px 3px rgba(0,0,0,.5); }
+  li:first-child .kop-t { font-size: 15.5px; font-weight: 650; color: #fff; -webkit-line-clamp: 2; }
 
-  /* ════ LAYOUT 3: BAND ════ */
-  .band .kaart { background: var(--base); }
-  .band .kopband { position: absolute; inset: 0 0 auto 0; height: 104px; overflow: hidden;
-      background: linear-gradient(100deg, var(--g2) 0%, var(--g1) 70%, var(--g1) 100%); }
-  .band .kopband::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.25), transparent 45%, rgba(0,0,0,.35)); }
-  .band .motief { right: 0; top: 0; width: 220px; height: 104px; opacity: .35; color: #fff; }
-  .band .titel { position: absolute; z-index: 2; left: 14px; top: 62px; font-size: 30px; font-weight: 800; letter-spacing: -.4px; line-height: 1; }
-  .band .sub { position: absolute; z-index: 2; right: 14px; top: 80px; font-size: 11.5px; color: rgba(255,255,255,.85); font-weight: 600; }
-  .band ul { list-style: none; position: absolute; inset: 104px 14px 6px 14px; display: flex; flex-direction: column; justify-content: center; gap: 8px; }
-  .band li { display: grid; grid-template-columns: 40px 1fr; gap: 8px; align-items: baseline; }
-  .band li + li { padding-top: 8px; border-top: 1px solid rgba(255,255,255,.08); }
-  .band li .kop-t { font-size: 14px; color: rgba(255,255,255,.82); -webkit-line-clamp: 1; }
-  .band li:first-child .kop-t { font-size: 15.5px; font-weight: 650; color: #fff; -webkit-line-clamp: 2; }
-  .band .wanneer { color: var(--acc); }
-
-  /* ── uitspraak (per layout iets anders) ── */
-  .quote .citaat { font-family: Georgia, "Times New Roman", serif; font-weight: 600; line-height: 1.28; text-wrap: balance; }
-  .quote .wie { display: flex; align-items: center; gap: 9px; font-size: 13px; color: rgba(255,255,255,.75); }
+  /* ── uitspraak ── */
+  .q-onder { position: absolute; z-index: 3; inset: calc(var(--band) + 10px) 26px 14px; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+  .citaat { font-family: Georgia, "Times New Roman", serif; font-size: 23px; font-weight: 600; line-height: 1.28; text-wrap: balance; text-shadow: 0 1px 6px rgba(0,0,0,.4); }
+  .wie { display: flex; align-items: center; gap: 9px; font-size: 13px; color: rgba(255,255,255,.8); }
   .foto { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700;
-          background: rgba(255,255,255,.14); box-shadow: inset 0 0 0 1px rgba(255,255,255,.2); }
-  .gloed .quote .inhoud { justify-content: center; padding: 40px 30px 20px; }
-  .gloed .quote .citaat { font-size: 25px; }
-  .gloed .quote .wie { margin-top: 16px; }
-  .tegel .quote .rechts-q { display: flex; flex-direction: column; justify-content: center; gap: 14px; padding-right: 8px; }
-  .tegel .quote .citaat { font-size: 21px; }
-  .band .quote .q-onder { position: absolute; inset: 116px 22px 14px; display: flex; flex-direction: column; justify-content: center; gap: 12px; }
-  .band .quote .citaat { font-size: 22px; }
+          background: color-mix(in srgb, var(--g1) 35%, transparent); box-shadow: inset 0 0 0 1px rgba(255,255,255,.25); }
+
+  .voortgang { position: absolute; z-index: 6; left: 0; bottom: 0; height: 2px; width: 0; background: var(--acc, #fff); opacity: .75; }
 
   /* ── bediening (alleen preview) ── */
   .bediening { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; font-size: 13px; }
@@ -107,23 +79,16 @@
   .bediening button.aan { background: #222; color: #fff; }
   .bediening button:focus-visible { outline: 2px solid #222; outline-offset: 2px; }
   .sep { width: 10px; }
-  .keuze { font-weight: 700; margin-right: 2px; }
   .noot { max-width: 580px; text-align: center; font-size: 12.5px; color: #5c574f; line-height: 1.5; }
   @media (prefers-reduced-motion: reduce) { .kaart { transition: none; } }
 </style>
 </head>
 <body>
 
-<div class="bediening" role="group" aria-label="Layout kiezen">
-  <span class="keuze">Layout:</span>
-  <button data-layout="gloed">1 · Gloed</button>
-  <button data-layout="tegel">2 · Tegel</button>
-  <button data-layout="band">3 · Band</button>
-</div>
-
 <div class="kast" id="kast">
-  <div class="scherm gloed" id="scherm">
-    <div class="balk">
+  <div class="scherm" id="scherm">
+    <div id="kaarten"></div>
+    <div class="boven">
       <span id="datum"></span>
       <span class="rechts">
         <span id="bijgewerkt" class="klein"></span>
@@ -131,7 +96,6 @@
         <span class="klok" id="klok"></span>
       </span>
     </div>
-    <div id="kaarten"></div>
     <div class="voortgang" id="voortgang"></div>
   </div>
 </div>
@@ -145,8 +109,8 @@
   <button data-zoom="2">2×</button>
 </div>
 <p class="noot">Preview van het 3,5 inch scherm (480 × 320 pixels), gevuld met de feed van vrijdag 27 november.
-  Elk onderwerp heeft een eigen kleur en een vaag motief op de achtergrond. Op het echte bord worden die achtergronden
-  kant-en-klare plaatjes, de tekst komt eroverheen. Klik op het scherm voor de volgende kaart.</p>
+  Op het echte bord wordt de achtergrond per onderwerp een kant-en-klaar plaatje; de tekst komt eroverheen.
+  Klik op het scherm of gebruik de pijltjes voor de volgende kaart.</p>
 
 <script>
 {
@@ -154,28 +118,88 @@ const VOORBEELD = {"v":1,"bijgewerkt":1795812446,"kaarten":[{"type":"nieuws","id
 
 /* ── thema per onderwerp ── */
 const THEMA = {
-  schaatsen:  { base:"#06192b", g1:"#5fe0ff", g2:"#1569a8", acc:"#9eeaff", motief:"ijsbaan" },
-  wielrennen: { base:"#1c1405", g1:"#ffd23f", g2:"#c86a0f", acc:"#ffd96b", motief:"weg" },
-  voetbal:    { base:"#041d12", g1:"#3be07a", g2:"#0d7a3e", acc:"#7ef0a6", motief:"veld" },
-  nieuws:     { base:"#1a0b0e", g1:"#ff5a5f", g2:"#8e1b2a", acc:"#ff9a9d", motief:"krant" },
-  nasa:       { base:"#07061a", g1:"#8b6bff", g2:"#311a8a", acc:"#b9a6ff", motief:"sterren" },
-  uitspraak:  { base:"#1d0a16", g1:"#ff9b6b", g2:"#a3245a", acc:"#ffc09e", motief:"citaat" },
-  _standaard: { base:"#0f1c2e", g1:"#f2b84b", g2:"#7a4f12", acc:"#f2b84b", motief:"krant" }
+  schaatsen:  { base:"#071a2c", g1:"#5fe0ff", g2:"#1569a8", acc:"#8fe6ff", lijn:"rgba(150,225,255,.30)", tekening:"ijsbaan" },
+  wielrennen: { base:"#1a1305", g1:"#ffd23f", g2:"#c8670f", acc:"#ffd56b", lijn:"rgba(255,214,110,.28)", tekening:"col" },
+  voetbal:    { base:"#05200f", g1:"#3fe07d", g2:"#0d7a3e", acc:"#7ef0a6", lijn:"rgba(160,255,190,.28)", tekening:"veld" },
+  nieuws:     { base:"#1b0a0e", g1:"#ff5a5f", g2:"#8e1b2a", acc:"#ff9a9d", lijn:"rgba(255,170,175,.24)", tekening:"krant" },
+  nasa:       { base:"#08061c", g1:"#8b6bff", g2:"#33198f", acc:"#bba8ff", lijn:"rgba(200,185,255,.34)", tekening:"heelal" },
+  uitspraak:  { base:"#1d0a16", g1:"#ff9b6b", g2:"#a3245a", acc:"#ffbf9c", lijn:"rgba(255,190,170,.24)", tekening:"citaat" },
+  _standaard: { base:"#0f1c2e", g1:"#f2b84b", g2:"#7a4f12", acc:"#f2b84b", lijn:"rgba(242,184,75,.15)", tekening:"krant" }
 };
 const BRON = { schaatsen:"NOS", wielrennen:"NOS", voetbal:"NOS", nieuws:"NOS", nasa:"nasa.gov" };
 
-/* sterren: vaste posities zodat het niet flikkert */
-const STER = Array.from({length: 46}, (_, i) => [ (i * 73 + 11) % 220, (i * 41 + 7) % 220, (i % 5 === 0) ? 1.6 : (i % 3 === 0 ? 1 : .6) ]);
+/* ── tekeningen over het hele scherm (480 x 320) ── */
+const rnd = (n => () => (n = (n * 16807) % 2147483647) / 2147483647)(42);   // vaste 'toeval' zodat sterren niet verspringen
+const STERREN = Array.from({ length: 90 }, () => [rnd() * 480, rnd() * 320, rnd() < .1 ? 1.5 : rnd() < .4 ? .9 : .5]);
 
-function motief(naam) {
-  const s = 'viewBox="0 0 220 220" preserveAspectRatio="xMidYMid slice" fill="none" stroke="currentColor"';
+function tekening(naam) {
+  const svg = (inhoud, extra = "") => `<svg viewBox="0 0 480 320" preserveAspectRatio="xMidYMid slice" fill="none" stroke="currentColor" ${extra}>${inhoud}</svg>`;
   switch (naam) {
-    case "ijsbaan": return `<svg ${s} stroke-width="2"><rect x="20" y="62" width="180" height="96" rx="48"/><rect x="36" y="76" width="148" height="68" rx="34"/><rect x="52" y="90" width="116" height="40" rx="20"/><line x1="110" y1="62" x2="110" y2="76"/></svg>`;
-    case "weg": return `<svg ${s} stroke-width="5" stroke-linecap="round">${[0,1,2,3,4,5].map(i=>`<line x1="${-20+i*44}" y1="230" x2="${40+i*44}" y2="-10" stroke-dasharray="22 16"/>`).join("")}</svg>`;
-    case "veld": return `<svg ${s} stroke-width="2"><rect x="10" y="20" width="200" height="180"/><line x1="110" y1="20" x2="110" y2="200"/><circle cx="110" cy="110" r="34"/><circle cx="110" cy="110" r="2.5" fill="currentColor"/><rect x="10" y="68" width="36" height="84"/><rect x="174" y="68" width="36" height="84"/></svg>`;
-    case "krant": return `<svg ${s} stroke-width="2.5" stroke-linecap="round">${[0,1,2,3,4,5,6,7,8].map(i=>`<line x1="20" y1="${30+i*20}" x2="${i%3===2?130:200}" y2="${30+i*20}"/>`).join("")}</svg>`;
-    case "sterren": return `<svg viewBox="0 0 220 220" preserveAspectRatio="xMidYMid slice" fill="currentColor">${STER.map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}"/>`).join("")}<circle cx="168" cy="62" r="26" fill="none" stroke="currentColor" stroke-width="1.5"/><ellipse cx="168" cy="62" rx="44" ry="10" fill="none" stroke="currentColor" stroke-width="1.2" transform="rotate(-18 168 62)"/></svg>`;
-    case "citaat": return `<svg viewBox="0 0 220 220" preserveAspectRatio="xMidYMid slice" fill="currentColor"><text x="18" y="190" font-family="Georgia,serif" font-size="240" font-weight="700">“</text></svg>`;
+    case "veld": {
+      const stroken = Array.from({ length: 12 }, (_, i) => i % 2 ? `<rect x="${i * 40}" y="0" width="40" height="320" fill="currentColor" stroke="none" opacity=".18"/>` : "").join("");
+      return svg(`${stroken}
+        <g stroke-width="2">
+          <rect x="20" y="22" width="440" height="276"/>
+          <line x1="240" y1="22" x2="240" y2="298"/>
+          <circle cx="240" cy="160" r="44"/><circle cx="240" cy="160" r="3" fill="currentColor"/>
+          <rect x="20" y="88" width="66" height="144"/><rect x="20" y="126" width="22" height="68"/>
+          <rect x="394" y="88" width="66" height="144"/><rect x="438" y="126" width="22" height="68"/>
+          <circle cx="64" cy="160" r="2.5" fill="currentColor"/><circle cx="416" cy="160" r="2.5" fill="currentColor"/>
+          <path d="M86 132a36 36 0 0 1 0 56"/><path d="M394 132a36 36 0 0 0 0 56"/>
+          <rect x="12" y="140" width="8" height="40"/><rect x="460" y="140" width="8" height="40"/>
+          <path d="M20 30a8 8 0 0 0 8-8M452 22a8 8 0 0 0 8 8M20 290a8 8 0 0 1 8 8M452 298a8 8 0 0 1 8-8"/>
+        </g>`);
+    }
+    case "ijsbaan": {
+      const krassen = Array.from({ length: 14 }, (_, i) => { const y = 30 + i * 21, x = (i * 97) % 300; return `<path d="M${x} ${y}q60 -10 140 6" stroke-width=".8" opacity=".6"/>`; }).join("");
+      return svg(`${krassen}
+        <g stroke-width="2">
+          <rect x="28" y="40" width="424" height="240" rx="120"/>
+          <rect x="52" y="64" width="376" height="192" rx="96"/>
+          <rect x="76" y="88" width="328" height="144" rx="72"/>
+          <path d="M168 256 L312 280 M168 280 L312 256" stroke-dasharray="6 5"/>
+          <line x1="120" y1="232" x2="120" y2="280" stroke-dasharray="3 4"/>
+        </g>
+        <g stroke-width="1.2" opacity=".7">${[150, 190, 230, 270, 310, 350].map(x => `<circle cx="${x}" cy="160" r="2.2" fill="currentColor"/>`).join("")}</g>`);
+    }
+    case "col": {
+      return svg(`
+        <path d="M0 150 L60 120 L95 132 L150 70 L190 95 L240 28 L290 82 L330 60 L380 110 L430 90 L480 125" stroke-width="2"/>
+        <path d="M0 175 L70 150 L120 160 L170 118 L230 135 L300 112 L360 140 L420 128 L480 150" stroke-width="1.2" opacity=".7"/>
+        <path d="M228 42 L240 28 L252 42" stroke-width="2"/><path d="M232 36 l8 -9 8 9" fill="currentColor" stroke="none" opacity=".5"/>
+        <g stroke-width="2.2"><path d="M110 320 C 190 260 210 230 236 200 C 262 230 290 262 370 320"/></g>
+        <path d="M236 200 C 230 240 220 280 210 320" stroke-width="3" stroke-dasharray="14 12"/>
+        <g font-family="system-ui" font-size="9" fill="currentColor" stroke="none">
+          <text x="250" y="22">2115 m</text>
+        </g>
+        ${[[70, 300], [120, 268], [330, 280], [380, 305]].map(([x, y]) => `<line x1="${x}" y1="${y}" x2="${x}" y2="${y - 14}" stroke-width="1.5"/>`).join("")}`);
+    }
+    case "krant": {
+      const kolom = (x, y, w, n) => Array.from({ length: n }, (_, i) => `<line x1="${x}" y1="${y + i * 11}" x2="${x + (i % 5 === 4 ? w * .55 : w)}" y2="${y + i * 11}"/>`).join("");
+      return svg(`
+        <g stroke-width="2.2"><line x1="18" y1="72" x2="462" y2="72"/><line x1="18" y1="76" x2="462" y2="76"/></g>
+        <g stroke-width="1.6" stroke-linecap="round">${kolom(18, 82, 130, 20)}${kolom(330, 82, 132, 20)}${kolom(175, 186, 130, 11)}</g>
+        <rect x="175" y="82" width="130" height="86" stroke-width="1.6"/>
+        <path d="M175 168 l40 -40 30 26 25 -18 35 32" stroke-width="1.4"/>
+        <g stroke-width="1.2"><line x1="162" y1="82" x2="162" y2="300"/><line x1="318" y1="82" x2="318" y2="300"/></g>`);
+    }
+    case "heelal": {
+      return svg(`
+        <g fill="currentColor" stroke="none">${STERREN.map(([x, y, r]) => `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}"/>`).join("")}</g>
+        <ellipse cx="240" cy="190" rx="300" ry="120" stroke-width="1" stroke-dasharray="2 6"/>
+        <ellipse cx="240" cy="190" rx="200" ry="74" stroke-width="1" opacity=".8"/>
+        <circle cx="320" cy="44" r="22" stroke-width="2"/>
+        <path d="M300 38 q20 6 40 0" stroke-width="1" opacity=".7"/>
+        <ellipse cx="320" cy="44" rx="42" ry="9" stroke-width="1.6" transform="rotate(-16 320 44)"/>
+        <circle cx="90" cy="240" r="9" stroke-width="1.6"/>
+        <path d="M40 300 Q 160 210 300 130" stroke-width="1.4" stroke-dasharray="4 5"/>
+        <path d="M300 130 l-4 10 l12 -12 l-14 2 z" fill="currentColor" stroke="none"/>`);
+    }
+    case "citaat": {
+      const regels = Array.from({ length: 12 }, (_, i) => `<line x1="0" y1="${100 + i * 20}" x2="480" y2="${100 + i * 20}"/>`).join("");
+      return svg(`<g stroke-width=".8">${regels}</g>
+        <text x="300" y="300" font-family="Georgia,serif" font-size="330" font-weight="700" fill="currentColor" stroke="none" opacity=".7">”</text>`);
+    }
   }
   return "";
 }
@@ -183,9 +207,9 @@ function motief(naam) {
 const DAGEN = ["zo","ma","di","wo","do","vr","za"];
 const MAANDEN = ["jan","feb","mrt","apr","mei","jun","jul","aug","sep","okt","nov","dec"];
 const DUUR = 9000, UITSPRAAK_ELKE = 2;
-const esc = t => String(t ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const esc = t => String(t ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
 
-let feed = VOORBEELD, volgorde = [], plek = 0, gepauzeerd = false, start = 0, layout = "gloed";
+let feed = VOORBEELD, volgorde = [], plek = 0, gepauzeerd = false, start = 0;
 const scherm = document.getElementById("scherm"), box = document.getElementById("kaarten"), balk = document.getElementById("voortgang");
 
 const nu = () => feed === VOORBEELD ? feed.bijgewerkt * 1000 : Date.now();
@@ -198,7 +222,7 @@ function geleden(ts) {
   return d === 1 ? "gisteren" : d + " dgn";
 }
 const vandaag = k => k.items.filter(i => nu() - i.ts * 1000 < 86400000).length;
-const initialen = n => esc(n.split(" ").filter(w => w[0] && w[0] === w[0].toUpperCase()).map(w => w[0]).slice(0, 2).join(""));
+const initialen = n => esc(String(n || "").split(" ").filter(w => w[0] && w[0] === w[0].toUpperCase()).map(w => w[0]).slice(0, 2).join(""));
 
 function maakVolgorde() {
   const nieuws = feed.kaarten.filter(k => k.type === "nieuws");
@@ -208,42 +232,26 @@ function maakVolgorde() {
   if (q && !volgorde.includes(q)) volgorde.push(q);
 }
 
-function stijl(k) {
-  const t = THEMA[k.id] || THEMA._standaard;
-  return { t, css: `--base:${t.base};--g1:${t.g1};--g2:${t.g2};--acc:${t.acc}` };
-}
-
-function nieuwsHTML(k, t) {
-  const n = vandaag(k), sub = `${BRON[k.id] || "nieuws"} · ${n ? n + " nieuw vandaag" : "laatste " + geleden(k.items[0]?.ts || 0)}`;
-  const items = k.items.slice(0, 4);
-  const lijst = (wannerEerst) => items.map(it => wannerEerst
-      ? `<li><span class="wanneer">${geleden(it.ts)}</span><span class="kop-t">${esc(it.t)}</span></li>`
-      : `<li><span class="kop-t">${esc(it.t)}</span><span class="wanneer">${geleden(it.ts)}</span></li>`).join("");
-  if (layout === "gloed") return `<div class="motief">${motief(t.motief)}</div>
-      <div class="inhoud"><div class="titel">${esc(k.naam)}</div><div class="sub">${esc(sub)}</div><ul>${lijst(false)}</ul></div>`;
-  if (layout === "tegel") return `<div class="inhoud"><div class="blok"><div class="motief">${motief(t.motief)}</div>
-      <div class="titel">${esc(k.naam)}</div><div class="sub">${esc(BRON[k.id] || "")}</div>
-      <div class="groot">${n}<small>${n === 1 ? "bericht" : "berichten"} vandaag</small></div>
-      <div class="voet">laatste ${geleden(k.items[0]?.ts || 0)}</div></div>
-      <ul>${items.slice(0, 4).map(it => `<li><span class="wanneer">${geleden(it.ts)}</span><span class="kop-t">${esc(it.t)}</span></li>`).join("")}</ul></div>`;
-  return `<div class="kopband"><div class="motief">${motief(t.motief)}</div></div>
-      <div class="titel">${esc(k.naam)}</div><div class="sub">${esc(sub)}</div><ul>${lijst(true)}</ul>`;
-}
-
-function quoteHTML(k, t) {
-  const wie = `<div class="wie"><span class="foto">${initialen(k.wie)}</span>${esc(k.wie)}</div>`;
-  const citaat = `<div class="citaat">${esc(k.tekst)}</div>`;
-  if (layout === "gloed") return `<div class="motief">${motief("citaat")}</div><div class="inhoud">${citaat}${wie}</div>`;
-  if (layout === "tegel") return `<div class="inhoud"><div class="blok">
-      <div class="titel">Uitspraak</div><div class="sub">van de dag</div><div class="groot">“</div><div class="voet">${DAGEN[new Date(nu()).getDay()]} ${new Date(nu()).getDate()} ${MAANDEN[new Date(nu()).getMonth()]}</div></div>
-      <div class="rechts-q">${citaat}${wie}</div></div>`;
-  return `<div class="kopband"><div class="motief">${motief("citaat")}</div></div><div class="titel">Uitspraak</div>
-      <div class="sub">van de dag</div><div class="q-onder">${citaat}${wie}</div>`;
+function lagen(t) {
+  const tek = tekening(t.tekening);
+  return `<div class="tekening">${tek}</div><div class="band"></div><div class="tekening fel">${tek}</div><div class="inhoudlaag"></div>`;
 }
 
 function teken() {
-  const k = volgorde[plek], { t, css } = stijl(k);
-  box.innerHTML = `<div class="kaart ${k.type === "uitspraak" ? "quote" : ""}" style="${css}">${k.type === "uitspraak" ? quoteHTML(k, t) : nieuwsHTML(k, t)}</div>`;
+  const k = volgorde[plek], t = THEMA[k.id] || THEMA._standaard;
+  const css = `--base:${t.base};--g1:${t.g1};--g2:${t.g2};--acc:${t.acc};--lijn:${t.lijn}`;
+  let html;
+  if (k.type === "uitspraak") {
+    html = `${lagen(t)}<div class="titelrij"><span class="titel">Uitspraak</span><span class="sub">van de dag</span></div>
+      <div class="q-onder"><div class="citaat">${esc(k.tekst)}</div>
+      <div class="wie"><span class="foto">${initialen(k.wie)}</span>${esc(k.wie)}</div></div>`;
+  } else {
+    const n = vandaag(k);
+    const sub = n ? `<b>${n}</b>nieuw vandaag` : `<b>${geleden(k.items[0]?.ts || 0)}</b>laatste bericht`;
+    html = `${lagen(t)}<div class="titelrij"><span class="titel">${esc(k.naam)}</span><span class="sub">${sub}</span></div>
+      <ul>${k.items.slice(0, 4).map(it => `<li><span class="wanneer">${geleden(it.ts)}</span><span class="kop-t">${esc(it.t)}</span></li>`).join("")}</ul>`;
+  }
+  box.innerHTML = `<div class="kaart" style="${css}">${html}</div>`;
   scherm.style.setProperty("--acc", t.acc);
   requestAnimationFrame(() => box.firstElementChild.classList.add("zichtbaar"));
   start = performance.now();
@@ -269,12 +277,6 @@ function zoom(f) {
   kast.style.transform = `scale(${f})`; kast.style.marginBottom = `${(f - 1) * 356}px`;
   document.querySelectorAll("[data-zoom]").forEach(b => b.classList.toggle("aan", +b.dataset.zoom === f));
 }
-function kiesLayout(l) {
-  layout = l; scherm.classList.remove("gloed", "tegel", "band"); scherm.classList.add(l);
-  document.querySelectorAll("[data-layout]").forEach(b => b.classList.toggle("aan", b.dataset.layout === l));
-  try { localStorage.setItem("sportscherm-layout", l); } catch (e) {}
-  if (volgorde.length) teken();
-}
 
 async function laad() {
   try { const r = await fetch("feed.json", { cache: "no-store" }); if (r.ok) feed = await r.json(); } catch (e) {}
@@ -288,11 +290,8 @@ document.getElementById("volgende").onclick = () => volgende(1);
 scherm.onclick = () => volgende(1);
 document.getElementById("pauze").onclick = e => { gepauzeerd = !gepauzeerd; e.target.textContent = gepauzeerd ? "Verder" : "Pauze"; e.target.classList.toggle("aan", gepauzeerd); };
 document.querySelectorAll("[data-zoom]").forEach(b => b.onclick = () => zoom(+b.dataset.zoom));
-document.querySelectorAll("[data-layout]").forEach(b => b.onclick = () => kiesLayout(b.dataset.layout));
 document.addEventListener("keydown", e => { if (e.key === "ArrowRight") volgende(1); if (e.key === "ArrowLeft") volgende(-1); });
 
-let bewaard = null; try { bewaard = localStorage.getItem("sportscherm-layout"); } catch (e) {}
-kiesLayout(["gloed", "tegel", "band"].includes(bewaard) ? bewaard : "gloed");
 klok(); setInterval(klok, 10000);
 zoom(window.innerWidth > 1100 ? 2 : 1);
 laad(); requestAnimationFrame(lus);
