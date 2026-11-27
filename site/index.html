@@ -62,6 +62,9 @@
   .kop-t { font-size: 14px; line-height: 1.22; color: rgba(255,255,255,.84); display: -webkit-box; -webkit-line-clamp: 1;
            -webkit-box-orient: vertical; overflow: hidden; text-shadow: 0 1px 3px rgba(0,0,0,.5); }
   li:first-child .kop-t { font-size: 15.5px; font-weight: 650; color: #fff; -webkit-line-clamp: 2; }
+  /* kaart met eigen indeling (koppen/regels uit de feed): alle koppen even groot en meer regels */
+  ul.ruim li .kop-t { font-size: 15px; line-height: 1.24; color: rgba(255,255,255,.9); -webkit-line-clamp: var(--regels, 3); }
+  ul.ruim li:first-child .kop-t { font-size: 15px; font-weight: 650; color: #fff; }
 
   /* ── weer ── */
   .weer { position: absolute; z-index: 3; inset: calc(var(--band) + 8px) 14px 10px; display: grid; grid-template-columns: 1fr 156px; gap: 14px; }
@@ -129,7 +132,7 @@
 
 <script>
 {
-const VOORBEELD = {"v":1,"bijgewerkt":1795814712,"kaarten":[{"type":"weer","id":"weer","naam":"Weer","plaats":"Koudekerk aan den Rijn","nu":{"t":-4,"voelt":-8,"c":2,"wind":10,"kans":0,"max":1,"min":-5},"dagen":[{"d":6,"c":3,"max":1,"min":-5},{"d":0,"c":55,"max":4,"min":1},{"d":1,"c":45,"max":6,"min":2}]},{"type":"nieuws","id":"schaatsen","naam":"Schaatsen","kleur":"#4FC3F7","items":[{"t":"Jade Groenewoud wint eerste marathon op natuurijs, Haasjes zegeviert bij mannen","ts":1795720226},{"t":"Eerste marathon op natuurijs donderdagavond in Winterswijk","ts":1795682211},{"t":"Natuurijsbanen geopend: marathonschaatsster verpulvert werelduurrecord","ts":1795510104},{"t":"Goud, goud en nog eens goud voor Daleman, schaatstalent is 'volwassener geworden'","ts":1795346809},{"t":"Italië viert feest met eerste medaille sinds 1998 op 500 meter, Stolz weer de sterkste","ts":1795335754}]},{"type":"nieuws","id":"wielrennen","naam":"Wielrennen","kleur":"#FFB300","items":[{"t":"Del Grosso buigt na slippertje voor Nys in 'episch' Ostrava, revanche Schreiber","ts":1795804149},{"t":"Del Grosso neemt uitdaging Nys aan in wereldbeker: 'Maar zit pas week op crossfiets'","ts":1795782314},{"t":"Tien jaar na ‘verziekte wielersport’ keert Rabobank terug als hoofdsponsor in peloton","ts":1795780816},{"t":"Wielerploeg Visma-Lease a Bike krijgt nieuwe naam met vertrek Visma als naamsponsor","ts":1795709273},{"t":"Vollering op bezoek bij de paus: 'Beetje spannend, ik laat me verrassen'","ts":1795435729}]},{"type":"nieuws","id":"voetbal","naam":"Voetbal","kleur":"#E53935","items":[{"t":"Willem II geeft zege weg tegen Groningen en breekt negatief eredivisierecord","ts":1795813975},{"t":"Succestrainer Slegers ontslagen door Arsenal, waar ze de Champions League mee won","ts":1795793530},{"t":"RKC Waalwijk zet trainer Duits aan de kant na tegenvallende resultaten","ts":1795791153},{"t":"Verschil in ervaring tussen Feyenoord en Ajax: 'Maar Klassieker is duel op zichzelf'","ts":1795789737},{"t":"Kou in Nederland: schaatsen op natuurijs, eerstedivisieduels en hockeyprogramma afgelast","ts":1795776382}]},{"type":"nieuws","id":"nieuws","naam":"Nieuws","kleur":"#90A4AE","items":[{"t":"Servische Studentenlijst schuift scheikundehoogleraar naar voren als presidentskandidaat","ts":1795813610},{"t":"Na commotie eert Margraten zwarte bevrijders opnieuw: 'Nu nog op begraafplaats zelf'","ts":1795812566},{"t":"Van loze beloftes tot torenhoge huren: woningcrisis domineert Spaanse verkiezingen","ts":1795807420},{"t":"Explosiegevaar door al dagen woedende silobrand in Drachten, bedrijf ontruimd","ts":1795805457},{"t":"Emotioneel afscheid van Utrechtse Mohammed (19): 'Hij hielp iedereen, maar wie hielp hem?'","ts":1795804840}]},{"type":"nieuws","id":"nasa","naam":"NASA","kleur":"#90A4AE","items":[{"t":"Artemis III Astronaut Andre Douglas Visits VAB","ts":1795791660},{"t":"NASA’s NG-25 Mission to Launch Pioneering Space Crops Research","ts":1795789320},{"t":"APOD: 2026 November 27 – The Moon Watchers","ts":1795755900},{"t":"Shivelyuch Socked In","ts":1795755660},{"t":"APOD: 2026 November 26 – Eye in the Sky: The Milky Way over Lençóis","ts":1795669500}]},{"type":"uitspraak","id":"uitspraak","naam":"Uitspraak van de dag","tekst":"Ook deze tijd zal eenmaal de goede oude tijd heten.","wie":"Godfried Bomans","foto":"bomans"}]};
+const VOORBEELD = {"v":1,"bijgewerkt":1795814712,"kaarten":[{"type":"weer","id":"weer","naam":"Weer","plaats":"Koudekerk aan den Rijn","nu":{"t":-4,"voelt":-8,"c":2,"wind":10,"kans":0,"max":1,"min":-5},"dagen":[{"d":6,"c":3,"max":1,"min":-5},{"d":0,"c":55,"max":4,"min":1},{"d":1,"c":45,"max":6,"min":2}]},{"type":"nieuws","id":"schaatsen","naam":"Schaatsen","kleur":"#4FC3F7","items":[{"t":"Jade Groenewoud wint eerste marathon op natuurijs, Haasjes zegeviert bij mannen","ts":1795720226},{"t":"Eerste marathon op natuurijs donderdagavond in Winterswijk","ts":1795682211},{"t":"Natuurijsbanen geopend: marathonschaatsster verpulvert werelduurrecord","ts":1795510104},{"t":"Goud, goud en nog eens goud voor Daleman, schaatstalent is 'volwassener geworden'","ts":1795346809},{"t":"Italië viert feest met eerste medaille sinds 1998 op 500 meter, Stolz weer de sterkste","ts":1795335754}]},{"type":"nieuws","id":"wielrennen","naam":"Wielrennen","kleur":"#FFB300","items":[{"t":"Del Grosso buigt na slippertje voor Nys in 'episch' Ostrava, revanche Schreiber","ts":1795804149},{"t":"Del Grosso neemt uitdaging Nys aan in wereldbeker: 'Maar zit pas week op crossfiets'","ts":1795782314},{"t":"Tien jaar na ‘verziekte wielersport’ keert Rabobank terug als hoofdsponsor in peloton","ts":1795780816},{"t":"Wielerploeg Visma-Lease a Bike krijgt nieuwe naam met vertrek Visma als naamsponsor","ts":1795709273},{"t":"Vollering op bezoek bij de paus: 'Beetje spannend, ik laat me verrassen'","ts":1795435729}]},{"type":"nieuws","id":"voetbal","naam":"Voetbal","kleur":"#E53935","items":[{"t":"Willem II geeft zege weg tegen Groningen en breekt negatief eredivisierecord","ts":1795813975},{"t":"Succestrainer Slegers ontslagen door Arsenal, waar ze de Champions League mee won","ts":1795793530},{"t":"RKC Waalwijk zet trainer Duits aan de kant na tegenvallende resultaten","ts":1795791153},{"t":"Verschil in ervaring tussen Feyenoord en Ajax: 'Maar Klassieker is duel op zichzelf'","ts":1795789737},{"t":"Kou in Nederland: schaatsen op natuurijs, eerstedivisieduels en hockeyprogramma afgelast","ts":1795776382}]},{"type":"nieuws","id":"nieuws","naam":"Nieuws","kleur":"#90A4AE","items":[{"t":"Servische Studentenlijst schuift scheikundehoogleraar naar voren als presidentskandidaat","ts":1795813610},{"t":"Na commotie eert Margraten zwarte bevrijders opnieuw: 'Nu nog op begraafplaats zelf'","ts":1795812566},{"t":"Van loze beloftes tot torenhoge huren: woningcrisis domineert Spaanse verkiezingen","ts":1795807420},{"t":"Explosiegevaar door al dagen woedende silobrand in Drachten, bedrijf ontruimd","ts":1795805457},{"t":"Emotioneel afscheid van Utrechtse Mohammed (19): 'Hij hielp iedereen, maar wie hielp hem?'","ts":1795804840}]},{"type":"nieuws","id":"nasa","naam":"NASA","kleur":"#90A4AE","items":[{"t":"Artemis III Astronaut Andre Douglas Visits VAB","ts":1795791660},{"t":"NASA’s NG-25 Mission to Launch Pioneering Space Crops Research","ts":1795789320},{"t":"APOD: 2026 November 27 – The Moon Watchers","ts":1795755900},{"t":"Shivelyuch Socked In","ts":1795755660},{"t":"APOD: 2026 November 26 – Eye in the Sky: The Milky Way over Lençóis","ts":1795669500}]},{"type":"nieuws","id":"speld","naam":"De Speld","kleur":"#FFFFFF","items":[{"t":"KNMI: de scheldwoorden kunnen uit het vet, want het is vandaag tyfuskoud","ts":1795793520},{"t":"Man die naar sterrenhemel vol SpaceX-satellieten kijkt realiseert zich weer hoe klein en nietig hij is","ts":1795770600},{"t":"Volslagen randdebiel koopt pak vla zonder Black Friday-korting","ts":1795701900}],"koppen":3,"regels":3},{"type":"uitspraak","id":"uitspraak","naam":"Uitspraak van de dag","tekst":"Ook deze tijd zal eenmaal de goede oude tijd heten.","wie":"Godfried Bomans","foto":"bomans"}]};
 
 /* ── thema per onderwerp ── */
 const THEMA = {
@@ -140,9 +143,10 @@ const THEMA = {
   nasa:       { base:"#08061c", g1:"#8b6bff", g2:"#33198f", acc:"#bba8ff", lijn:"rgba(200,185,255,.34)", tekening:"heelal" },
   uitspraak:  { base:"#1d0a16", g1:"#ff9b6b", g2:"#a3245a", acc:"#ffbf9c", lijn:"rgba(255,190,170,.24)", tekening:"citaat" },
   weer:       { base:"#0a1a30", g1:"#6fb3ff", g2:"#2557c7", acc:"#ffd9a0", lijn:"rgba(255,225,170,.28)", tekening:"weer" },
+  speld:      { base:"#1f0620", g1:"#ff5fd2", g2:"#8a1f8f", acc:"#ff9be6", lijn:"rgba(255,175,235,.26)", tekening:"speld" },
   _standaard: { base:"#0f1c2e", g1:"#f2b84b", g2:"#7a4f12", acc:"#f2b84b", lijn:"rgba(242,184,75,.15)", tekening:"krant" }
 };
-const BRON = { schaatsen:"NOS", wielrennen:"NOS", voetbal:"NOS", nieuws:"NOS", nasa:"nasa.gov" };
+const BRON = { schaatsen:"NOS", wielrennen:"NOS", voetbal:"NOS", nieuws:"NOS", nasa:"nasa.gov", speld:"speld.nl" };
 
 /* ── tekeningen over het hele scherm (480 x 320) ── */
 const rnd = (n => () => (n = (n * 16807) % 2147483647) / 2147483647)(42);   // vaste 'toeval' zodat sterren niet verspringen
@@ -198,6 +202,32 @@ function tekening(naam) {
         <rect x="175" y="82" width="130" height="86" stroke-width="1.6"/>
         <path d="M175 168 l40 -40 30 26 25 -18 35 32" stroke-width="1.4"/>
         <g stroke-width="1.2"><line x1="162" y1="82" x2="162" y2="300"/><line x1="318" y1="82" x2="318" y2="300"/></g>`);
+    }
+    case "speld": {
+      // een krantenpagina, een beetje scheef, met een grote speld erdoor en een ezelsoor
+      const regel = (x, y, w, n) => Array.from({ length: n }, (_, i) => `<line x1="${x}" y1="${y + i * 12}" x2="${x + (i % 4 === 3 ? w * .5 : w)}" y2="${y + i * 12}"/>`).join("");
+      return svg(`
+        <g transform="rotate(-6 240 175)">
+          <path d="M70 34 H410 V300 H104 L70 266 Z" stroke-width="2"/>
+          <path d="M70 266 L104 266 L104 300" stroke-width="1.6"/>
+          <g stroke-width="2.4"><line x1="86" y1="56" x2="394" y2="56"/></g>
+          <g stroke-width="1"><line x1="86" y1="64" x2="394" y2="64"/></g>
+          <rect x="86" y="76" width="150" height="92" stroke-width="1.6"/>
+          <path d="M86 168 l42 -38 30 24 26 -16 52 30" stroke-width="1.3"/>
+          <circle cx="206" cy="98" r="9" stroke-width="1.3"/>
+          <g stroke-width="1.5" stroke-linecap="round">${regel(250, 80, 144, 18)}${regel(86, 182, 150, 9)}</g>
+          <line x1="243" y1="76" x2="243" y2="296" stroke-width="1"/>
+        </g>
+        <g stroke-linecap="round">
+          <line x1="296" y1="36" x2="266" y2="78" stroke-width="2.6"/>
+          <line x1="266" y1="78" x2="232" y2="126" stroke-width="2" stroke-dasharray="5 5" opacity=".7"/>
+          <line x1="232" y1="126" x2="218" y2="146" stroke-width="2.6"/>
+          <circle cx="266" cy="78" r="3.5" fill="currentColor" stroke="none"/>
+          <circle cx="232" cy="126" r="3.5" fill="currentColor" stroke="none"/>
+        </g>
+        <circle cx="304" cy="26" r="14" fill="currentColor" stroke="none" opacity=".55"/>
+        <circle cx="304" cy="26" r="14" stroke-width="2"/>
+        <path d="M297 20 a8 8 0 0 1 9 -3" stroke-width="1.6" opacity=".9"/>`);
     }
     case "heelal": {
       return svg(`
@@ -304,7 +334,7 @@ function teken() {
     const n = vandaag(k);
     const sub = n ? `<b>${n}</b>nieuw vandaag` : `<b>${geleden(k.items[0]?.ts || 0)}</b>laatste bericht`;
     html = `${lagen(t)}<div class="titelrij"><span class="titel">${esc(k.naam)}</span><span class="sub">${sub}</span></div>
-      <ul>${k.items.slice(0, 4).map(it => `<li><span class="wanneer">${geleden(it.ts)}</span><span class="kop-t">${esc(it.t)}</span></li>`).join("")}</ul>`;
+      <ul${k.koppen || k.regels ? ` class="ruim" style="--regels:${k.regels || 3}"` : ""}>${k.items.slice(0, k.koppen || 4).map(it => `<li><span class="wanneer">${geleden(it.ts)}</span><span class="kop-t">${esc(it.t)}</span></li>`).join("")}</ul>`;
   }
   box.innerHTML = `<div class="kaart" style="${css}">${html}</div>`;
   scherm.style.setProperty("--acc", t.acc);

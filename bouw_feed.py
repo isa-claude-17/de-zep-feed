@@ -53,24 +53,36 @@ def kort_in(tekst: str, max_tekens: int) -> str:
 def rss(bron, inst):
     root = ET.fromstring(haal_op(bron["url"]))
     grens = time.time() - inst["max_leeftijd_dagen"] * 86400
-    items = []
+    max_tekens = bron.get("max_tekens_kop", inst["max_tekens_kop"])
+    weg = {c.strip().lower() for c in bron.get("zonder_categorie", [])}
+    items, overgeslagen = [], 0
     for item in root.iter("item"):
         titel = (item.findtext("title") or "").strip()
         datum = item.findtext("pubDate")
         if not titel:
             continue
+        if weg and {(c.text or "").strip().lower() for c in item.findall("category")} & weg:
+            overgeslagen += 1
+            continue
         ts = int(parsedate_to_datetime(datum).timestamp()) if datum else 0
         if ts and ts < grens:
             continue
-        items.append({"t": kort_in(titel, inst["max_tekens_kop"]), "ts": ts})
+        items.append({"t": kort_in(titel, max_tekens), "ts": ts})
+    if overgeslagen:
+        print(f"    {overgeslagen} bericht(en) overgeslagen op categorie")
     items.sort(key=lambda i: i["ts"], reverse=True)
-    return {
+    kaart = {
         "type": "nieuws",
         "id": bron["id"],
         "naam": bron["naam"],
         "kleur": bron.get("kleur", "#FFFFFF"),
-        "items": items[: inst["max_koppen_per_bron"]],
+        "items": items[: bron.get("koppen", inst["max_koppen_per_bron"])],
     }
+    # optioneel: eigen indeling voor deze kaart (het bord gebruikt anders 4 koppen)
+    for veld in ("koppen", "regels"):
+        if veld in bron:
+            kaart[veld] = int(bron[veld])
+    return kaart
 
 
 def lees_uitspraken(adres):

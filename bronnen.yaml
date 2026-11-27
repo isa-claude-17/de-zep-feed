@@ -55,6 +55,20 @@ bronnen:
     url: https://www.nasa.gov/news-release/feed/
     aan: true
 
+  # Satire. Weinig berichten per dag maar lange koppen, dus minder koppen met meer regels.
+  # Optioneel per bron:  koppen (aantal op het scherm), regels (per kop),
+  # max_tekens_kop (overschrijft de instelling bovenaan) en
+  # zonder_categorie (berichten met zo'n categorie laten we weg, bijv. advertorials).
+  - id: speld
+    type: rss
+    naam: De Speld
+    url: https://speld.nl/feed/
+    koppen: 3
+    regels: 3
+    max_tekens_kop: 140
+    zonder_categorie: [Advertorial, Campagne]
+    aan: true
+
   # Voorbeelden voor later, staan nog uit:
 
   - id: f1
