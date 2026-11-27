@@ -26,6 +26,8 @@ jobs:
           python-version: "3.12"
       - run: pip install pyyaml
       - run: python bouw_feed.py
+      - name: Toon feed.json in het logboek
+        run: python -m json.tool site/feed.json
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
