@@ -69,14 +69,15 @@ bronnen:
     zonder_categorie: [Advertorial, Campagne]
     aan: true
 
-  # Op deze dag (onthisday.com, Engelstalig). Elke feed heeft één bericht per dag, dus de server
-  # haalt hem maar één keer per dag op. Regels met een Europees woord (of Nederland/België)
-  # komen eerst, de rest vult aan; zet  europa: false  om dat uit te zetten.
+  # On this day (onthisday.com, Engelstalig). Elke feed heeft één bericht per dag, dus de server
+  # haalt hem maar één keer per dag op. Van de 8 tot 10 regels kiest hij er 5, gelijkmatig
+  # verdeeld van oud naar nieuw. Met  europa: true  komen regels met een Europees woord
+  # (of Nederland/België) eerst; staat nu uit omdat bekende Amerikanen dan wegvallen.
   # De volgorde van de schermen is de volgorde in dit bestand.
   - id: gebeurd
     type: opdezedag
     soort: gebeurd
-    naam: Gebeurd
+    naam: On this day
     url: https://www.onthisday.com/rss/historical-events.xml
     koppen: 5
     regels: 2
@@ -86,7 +87,7 @@ bronnen:
   - id: geboren
     type: opdezedag
     soort: geboren
-    naam: Geboren
+    naam: On this day - born
     url: https://www.onthisday.com/rss/famous-birthdays.xml
     koppen: 5
     regels: 2
@@ -96,7 +97,7 @@ bronnen:
   - id: overleden
     type: opdezedag
     soort: overleden
-    naam: Overleden
+    naam: On this day - died
     url: https://www.onthisday.com/rss/famous-deaths.xml
     koppen: 5
     regels: 2

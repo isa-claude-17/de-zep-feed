@@ -14,6 +14,7 @@ Een extra RSS-feed toevoegen hoeft alleen in bronnen.yaml.
 
 import csv
 import datetime as dt
+import hashlib
 import html
 import io
 import json
@@ -131,11 +132,27 @@ def schoon(soort, tekst):
     return tekst.strip(" ,")
 
 
-def moet_ophalen(vorige, nu=None):
+def handtekening(bron, inst):
+    """Korte code van de instellingen. Verandert die, dan bouwen we de kaart opnieuw."""
+    delen = [bron.get(k) for k in ("naam", "soort", "koppen", "regels", "europa")]
+    delen.append(bron.get("max_tekens_kop", inst["max_tekens_kop"]))
+    return hashlib.md5(json.dumps(delen).encode()).hexdigest()[:6]
+
+
+def spreid(lijst, n):
+    """Kiest n regels gelijkmatig verdeeld over de lijst (de site sorteert op jaartal)."""
+    if len(lijst) <= n:
+        return list(lijst)
+    return [lijst[round(i * (len(lijst) - 1) / (n - 1))] for i in range(n)] if n > 1 else lijst[:1]
+
+
+def moet_ophalen(vorige, sig=None, nu=None):
     """De site maakt elke dag rond 05:05 UTC een nieuw bericht. Vaker ophalen is zinloos."""
     nu = nu or dt.datetime.now(dt.timezone.utc)
     if not vorige or not vorige.get("ts"):
         return True
+    if sig is not None and vorige.get("sig") != sig:
+        return True                           # instellingen veranderd
     gemaakt = dt.datetime.fromtimestamp(vorige["ts"], dt.timezone.utc)
     if gemaakt.date() == nu.date():
         return False                          # kaart van vandaag staat er al
@@ -144,7 +161,8 @@ def moet_ophalen(vorige, nu=None):
 
 def opdezedag(bron, inst):
     vorige = inst.get("_oud", {}).get(bron["id"])
-    if not moet_ophalen(vorige):
+    sig = handtekening(bron, inst)
+    if not moet_ophalen(vorige, sig):
         print("    kaart van vandaag staat er al, niet opnieuw opgehaald")
         return vorige
     root = ET.fromstring(haal_op(bron["url"]))
@@ -158,18 +176,22 @@ def opdezedag(bron, inst):
         raise ValueError("geen regels gevonden in het bericht")
     soort = bron.get("soort", "")
     n = bron.get("koppen", 5)
-    # eerst de Europese regels (stabiel: bij gelijke score blijft de volgorde van de site),
-    # daarna op jaartal zetten zoals in de feed
+    # standaard gelijkmatig verspreid over de dag-lijst; met  europa: true  komen eerst de
+    # Europese regels (bij gelijke score blijft de volgorde van de site). Altijd op jaartal getoond.
     keuze = list(enumerate(regels))
-    if bron.get("europa", True):
+    if bron.get("europa", False):
         keuze.sort(key=lambda x: (-europa_score(x[1][1]), x[0]))
-    keuze = sorted(keuze[:n], key=lambda x: x[0])
+        keuze = keuze[:n]
+    else:
+        keuze = spreid(keuze, n)
+    keuze = sorted(keuze, key=lambda x: x[0])
     max_tekens = bron.get("max_tekens_kop", inst["max_tekens_kop"])
     kaart = {
         "type": "lijst",
         "id": bron["id"],
         "naam": bron["naam"],
         "ts": ts,
+        "sig": sig,
         "items": [{"j": j, "t": kort_in(schoon(soort, t), max_tekens)} for _, (j, t) in keuze],
     }
     for veld in ("koppen", "regels"):
