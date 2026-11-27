@@ -310,7 +310,7 @@ function tekening(naam) {
 
 const DAGEN = ["zo","ma","di","wo","do","vr","za"];
 const MAANDEN = ["jan","feb","mrt","apr","mei","jun","jul","aug","sep","okt","nov","dec"];
-const DUUR = 9000, UITSPRAAK_ELKE = 2;
+const DUUR = 9000;
 const esc = t => String(t ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
 
 let feed = VOORBEELD, volgorde = [], plek = 0, gepauzeerd = false, start = 0;
@@ -329,12 +329,11 @@ const vandaag = k => k.items.filter(i => nu() - i.ts * 1000 < 86400000).length;
 const initialen = n => esc(String(n || "").split(" ").filter(w => w[0] && w[0] === w[0].toUpperCase()).map(w => w[0]).slice(0, 2).join(""));
 
 function maakVolgorde() {
+  /* weer eerst, dan alle nieuws- en lijstkaarten, de uitspraak precies 1 keer per doorloop aan het eind */
   const nieuws = feed.kaarten.filter(k => k.type === "nieuws" || k.type === "lijst");
   const q = feed.kaarten.find(k => k.type === "uitspraak");
   const w = feed.kaarten.find(k => k.type === "weer");
-  volgorde = w ? [w] : [];
-  nieuws.forEach((k, i) => { volgorde.push(k); if (q && (i + 1) % UITSPRAAK_ELKE === 0) volgorde.push(q); });
-  if (q && !volgorde.includes(q)) volgorde.push(q);
+  volgorde = [...(w ? [w] : []), ...nieuws, ...(q ? [q] : [])];
 }
 
 /* weercodes (WMO) naar tekst en icoon */
