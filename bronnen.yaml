@@ -39,6 +39,13 @@ bronnen:
     url: https://feeds.nos.nl/nosnieuwsalgemeen
     aan: true
 
+  - id: nasa
+    type: rss
+    naam: NASA
+    kleur: "#90A4AE"
+    url: https://www.nasa.gov/news-release/feed/
+    aan: true
+
   # Voorbeelden voor later, staan nog uit:
 
   - id: f1
