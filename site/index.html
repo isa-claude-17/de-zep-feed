@@ -63,6 +63,21 @@
            -webkit-box-orient: vertical; overflow: hidden; text-shadow: 0 1px 3px rgba(0,0,0,.5); }
   li:first-child .kop-t { font-size: 15.5px; font-weight: 650; color: #fff; -webkit-line-clamp: 2; }
 
+  /* ── weer ── */
+  .weer { position: absolute; z-index: 3; inset: calc(var(--band) + 8px) 14px 10px; display: grid; grid-template-columns: 1fr 156px; gap: 14px; }
+  .weer-nu { display: flex; flex-direction: column; justify-content: center; }
+  .temp { font-size: 78px; font-weight: 300; line-height: .95; letter-spacing: -3px; font-variant-numeric: tabular-nums; text-shadow: 0 2px 14px rgba(0,0,0,.35); }
+  .oms { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 17px; font-weight: 650; }
+  .oms svg { width: 28px; height: 28px; flex: none; color: var(--acc); }
+  .det { margin-top: 6px; font-size: 12.5px; line-height: 1.5; color: rgba(255,255,255,.78); text-shadow: 0 1px 3px rgba(0,0,0,.5); }
+  .weer-dagen { display: flex; flex-direction: column; gap: 7px; justify-content: center; }
+  .dagrij { display: grid; grid-template-columns: 30px 26px 1fr; gap: 8px; align-items: center; padding: 8px 10px; border-radius: 12px;
+            background: color-mix(in srgb, var(--base) 55%, transparent); box-shadow: inset 0 0 0 1px rgba(255,255,255,.1); }
+  .dagrij .dag { font-size: 13px; font-weight: 700; color: var(--acc); }
+  .dagrij svg { width: 24px; height: 24px; color: rgba(255,255,255,.9); }
+  .dagrij .gr { text-align: right; font-size: 14px; font-weight: 650; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .dagrij .gr small { font-size: 12px; font-weight: 500; color: rgba(255,255,255,.6); margin-left: 4px; }
+
   /* ── uitspraak ── */
   .q-onder { position: absolute; z-index: 3; inset: calc(var(--band) + 10px) 26px 14px; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
   .citaat { font-family: Georgia, "Times New Roman", serif; font-size: 23px; font-weight: 600; line-height: 1.28; text-wrap: balance; text-shadow: 0 1px 6px rgba(0,0,0,.4); }
@@ -114,7 +129,7 @@
 
 <script>
 {
-const VOORBEELD = {"v":1,"bijgewerkt":1795812446,"kaarten":[{"type":"nieuws","id":"schaatsen","naam":"Schaatsen","kleur":"#4FC3F7","items":[{"t":"Jade Groenewoud wint eerste marathon op natuurijs, Haasjes zegeviert bij mannen","ts":1795720226},{"t":"Eerste marathon op natuurijs donderdagavond in Winterswijk","ts":1795682211},{"t":"Natuurijsbanen geopend: marathonschaatsster verpulvert werelduurrecord","ts":1795510104},{"t":"Goud, goud en nog eens goud voor Daleman, schaatstalent is 'volwassener geworden'","ts":1795346809},{"t":"Italië viert feest met eerste medaille sinds 1998 op 500 meter, Stolz weer de sterkste","ts":1795335754}]},{"type":"nieuws","id":"wielrennen","naam":"Wielrennen","kleur":"#FFB300","items":[{"t":"Zwierende Del Grosso buigt laat voor Nys in 'episch' Ostrava, revanche Schreiber","ts":1795804149},{"t":"Del Grosso neemt uitdaging Nys aan in wereldbeker: 'Maar zit pas week op crossfiets'","ts":1795782314},{"t":"Tien jaar na ‘verziekte wielersport’ keert Rabobank terug als hoofdsponsor in peloton","ts":1795780816},{"t":"Wielerploeg Visma-Lease a Bike krijgt nieuwe naam met vertrek Visma als naamsponsor","ts":1795709273},{"t":"Vollering op bezoek bij de paus: 'Beetje spannend, ik laat me verrassen'","ts":1795435729}]},{"type":"nieuws","id":"voetbal","naam":"Voetbal","kleur":"#E53935","items":[{"t":"Succestrainer Slegers ontslagen door Arsenal, waar ze de Champions League mee won","ts":1795793530},{"t":"RKC Waalwijk zet trainer Duits aan de kant na tegenvallende resultaten","ts":1795791153},{"t":"Verschil in ervaring tussen Feyenoord en Ajax: 'Maar Klassieker is duel op zichzelf'","ts":1795789737},{"t":"Kou in Nederland: schaatsen op natuurijs, eerstedivisieduels en hockeyprogramma afgelast","ts":1795776382},{"t":"Succesvol spitsenduo Van Bergen-Willumsson doet oude tijden herleven bij FC Groningen","ts":1795772313}]},{"type":"nieuws","id":"nieuws","naam":"Nieuws","kleur":"#90A4AE","items":[{"t":"Van loze beloftes tot torenhoge huren: woningcrisis domineert Spaanse verkiezingen","ts":1795807420},{"t":"Explosiegevaar door al dagen woedende silobrand in Drachten, bedrijf ontruimd","ts":1795805457},{"t":"Emotioneel afscheid van Utrechtse Mohammed (19): 'Hij hielp iedereen, maar wie hielp hem?'","ts":1795804840},{"t":"Verkoop memoires Joe Biden valt vies tegen: slechts 21.000 exemplaren in eerste week","ts":1795804744},{"t":"Podcast De Stemming: De Tuinslang, een stootkussen en stille Buma","ts":1795803218}]},{"type":"nieuws","id":"nasa","naam":"NASA","kleur":"#90A4AE","items":[{"t":"Artemis III Astronaut Andre Douglas Visits VAB","ts":1795791660},{"t":"NASA’s NG-25 Mission to Launch Pioneering Space Crops Research","ts":1795789320},{"t":"APOD: 2026 November 27 – The Moon Watchers","ts":1795755900},{"t":"Shivelyuch Socked In","ts":1795755660},{"t":"APOD: 2026 November 26 – Eye in the Sky: The Milky Way over Lençóis","ts":1795669500}]},{"type":"uitspraak","id":"uitspraak","naam":"Uitspraak van de dag","tekst":"Ook deze tijd zal eenmaal de goede oude tijd heten.","wie":"Godfried Bomans","foto":"bomans"}]};
+const VOORBEELD = {"v":1,"bijgewerkt":1795814234,"kaarten":[{"type":"weer","id":"weer","naam":"Weer","plaats":"Den Haag","nu":{"t":-3,"voelt":-7,"c":1,"wind":10,"kans":0,"max":0,"min":-4},"dagen":[{"d":6,"c":3,"max":2,"min":-4},{"d":0,"c":61,"max":5,"min":2},{"d":1,"c":51,"max":7,"min":3}]},{"type":"nieuws","id":"schaatsen","naam":"Schaatsen","kleur":"#4FC3F7","items":[{"t":"Jade Groenewoud wint eerste marathon op natuurijs, Haasjes zegeviert bij mannen","ts":1795720226},{"t":"Eerste marathon op natuurijs donderdagavond in Winterswijk","ts":1795682211},{"t":"Natuurijsbanen geopend: marathonschaatsster verpulvert werelduurrecord","ts":1795510104},{"t":"Goud, goud en nog eens goud voor Daleman, schaatstalent is 'volwassener geworden'","ts":1795346809},{"t":"Italië viert feest met eerste medaille sinds 1998 op 500 meter, Stolz weer de sterkste","ts":1795335754}]},{"type":"nieuws","id":"wielrennen","naam":"Wielrennen","kleur":"#FFB300","items":[{"t":"Del Grosso buigt na slippertje voor Nys in 'episch' Ostrava, revanche Schreiber","ts":1795804149},{"t":"Del Grosso neemt uitdaging Nys aan in wereldbeker: 'Maar zit pas week op crossfiets'","ts":1795782314},{"t":"Tien jaar na ‘verziekte wielersport’ keert Rabobank terug als hoofdsponsor in peloton","ts":1795780816},{"t":"Wielerploeg Visma-Lease a Bike krijgt nieuwe naam met vertrek Visma als naamsponsor","ts":1795709273},{"t":"Vollering op bezoek bij de paus: 'Beetje spannend, ik laat me verrassen'","ts":1795435729}]},{"type":"nieuws","id":"voetbal","naam":"Voetbal","kleur":"#E53935","items":[{"t":"Willem II geeft zege weg tegen Groningen en breekt negatief eredivisierecord","ts":1795813975},{"t":"Succestrainer Slegers ontslagen door Arsenal, waar ze de Champions League mee won","ts":1795793530},{"t":"RKC Waalwijk zet trainer Duits aan de kant na tegenvallende resultaten","ts":1795791153},{"t":"Verschil in ervaring tussen Feyenoord en Ajax: 'Maar Klassieker is duel op zichzelf'","ts":1795789737},{"t":"Kou in Nederland: schaatsen op natuurijs, eerstedivisieduels en hockeyprogramma afgelast","ts":1795776382}]},{"type":"nieuws","id":"nieuws","naam":"Nieuws","kleur":"#90A4AE","items":[{"t":"Servische Studentenlijst schuift scheikundehoogleraar naar voren als presidentskandidaat","ts":1795813610},{"t":"Na commotie eert Margraten zwarte bevrijders opnieuw: 'Nu nog op begraafplaats zelf'","ts":1795812566},{"t":"Van loze beloftes tot torenhoge huren: woningcrisis domineert Spaanse verkiezingen","ts":1795807420},{"t":"Explosiegevaar door al dagen woedende silobrand in Drachten, bedrijf ontruimd","ts":1795805457},{"t":"Emotioneel afscheid van Utrechtse Mohammed (19): 'Hij hielp iedereen, maar wie hielp hem?'","ts":1795804840}]},{"type":"nieuws","id":"nasa","naam":"NASA","kleur":"#90A4AE","items":[{"t":"Artemis III Astronaut Andre Douglas Visits VAB","ts":1795791660},{"t":"NASA’s NG-25 Mission to Launch Pioneering Space Crops Research","ts":1795789320},{"t":"APOD: 2026 November 27 – The Moon Watchers","ts":1795755900},{"t":"Shivelyuch Socked In","ts":1795755660},{"t":"APOD: 2026 November 26 – Eye in the Sky: The Milky Way over Lençóis","ts":1795669500}]},{"type":"uitspraak","id":"uitspraak","naam":"Uitspraak van de dag","tekst":"Ook deze tijd zal eenmaal de goede oude tijd heten.","wie":"Godfried Bomans","foto":"bomans"}]};
 
 /* ── thema per onderwerp ── */
 const THEMA = {
@@ -124,6 +139,7 @@ const THEMA = {
   nieuws:     { base:"#1b0a0e", g1:"#ff5a5f", g2:"#8e1b2a", acc:"#ff9a9d", lijn:"rgba(255,170,175,.24)", tekening:"krant" },
   nasa:       { base:"#08061c", g1:"#8b6bff", g2:"#33198f", acc:"#bba8ff", lijn:"rgba(200,185,255,.34)", tekening:"heelal" },
   uitspraak:  { base:"#1d0a16", g1:"#ff9b6b", g2:"#a3245a", acc:"#ffbf9c", lijn:"rgba(255,190,170,.24)", tekening:"citaat" },
+  weer:       { base:"#0a1a30", g1:"#6fb3ff", g2:"#2557c7", acc:"#ffd9a0", lijn:"rgba(255,225,170,.28)", tekening:"weer" },
   _standaard: { base:"#0f1c2e", g1:"#f2b84b", g2:"#7a4f12", acc:"#f2b84b", lijn:"rgba(242,184,75,.15)", tekening:"krant" }
 };
 const BRON = { schaatsen:"NOS", wielrennen:"NOS", voetbal:"NOS", nieuws:"NOS", nasa:"nasa.gov" };
@@ -195,6 +211,15 @@ function tekening(naam) {
         <path d="M40 300 Q 160 210 300 130" stroke-width="1.4" stroke-dasharray="4 5"/>
         <path d="M300 130 l-4 10 l12 -12 l-14 2 z" fill="currentColor" stroke="none"/>`);
     }
+    case "weer": {
+      const wolk = (x, y, k) => `<path transform="translate(${x} ${y}) scale(${k})" d="M8 22h15a5 5 0 0 0 .6-9.96A7.5 7.5 0 0 0 9.4 13.1 4.6 4.6 0 0 0 8 22z" stroke-width="${2 / k}"/>`;
+      const stralen = Array.from({ length: 14 }, (_, i) => { const a = i * Math.PI / 7, x = 392 + Math.cos(a) * 46, y = 104 + Math.sin(a) * 46, x2 = 392 + Math.cos(a) * (i % 2 ? 58 : 64), y2 = 104 + Math.sin(a) * (i % 2 ? 58 : 64); return `<line x1="${x.toFixed(1)}" y1="${y.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>`; }).join("");
+      const druppels = Array.from({ length: 18 }, (_, i) => { const x = 40 + (i * 53) % 400, y = 196 + (i * 37) % 100; return `<line x1="${x}" y1="${y}" x2="${x - 5}" y2="${y + 13}" stroke-width="1.6" opacity=".7"/>`; }).join("");
+      return svg(`<g stroke-width="2.2"><circle cx="392" cy="104" r="34"/>${stralen}</g>
+        ${wolk(210, 96, 6.5)}${wolk(20, 150, 4.5)}${wolk(330, 184, 5.5)}
+        <g stroke-linecap="round">${druppels}</g>
+        <g stroke-width="1.2" opacity=".8">${[0, 1, 2, 3, 4, 5, 6, 7].map(i => `<line x1="14" y1="${96 + i * 28}" x2="${i % 2 ? 24 : 32}" y2="${96 + i * 28}"/>`).join("")}</g>`);
+    }
     case "citaat": {
       const regels = Array.from({ length: 12 }, (_, i) => `<line x1="0" y1="${100 + i * 20}" x2="480" y2="${100 + i * 20}"/>`).join("");
       return svg(`<g stroke-width=".8">${regels}</g>
@@ -227,9 +252,37 @@ const initialen = n => esc(String(n || "").split(" ").filter(w => w[0] && w[0] =
 function maakVolgorde() {
   const nieuws = feed.kaarten.filter(k => k.type === "nieuws");
   const q = feed.kaarten.find(k => k.type === "uitspraak");
-  volgorde = [];
+  const w = feed.kaarten.find(k => k.type === "weer");
+  volgorde = w ? [w] : [];
   nieuws.forEach((k, i) => { volgorde.push(k); if (q && (i + 1) % UITSPRAAK_ELKE === 0) volgorde.push(q); });
   if (q && !volgorde.includes(q)) volgorde.push(q);
+}
+
+/* weercodes (WMO) naar tekst en icoon */
+const WEERTEKST = { 0:"Helder", 1:"Overwegend helder", 2:"Half bewolkt", 3:"Bewolkt", 45:"Mist", 48:"Rijpmist", 51:"Lichte motregen", 53:"Motregen", 55:"Zware motregen",
+  56:"IJzel", 57:"IJzel", 61:"Lichte regen", 63:"Regen", 65:"Zware regen", 66:"IJzelregen", 67:"IJzelregen", 71:"Lichte sneeuw", 73:"Sneeuw", 75:"Zware sneeuw",
+  77:"Sneeuwkorrels", 80:"Lichte buien", 81:"Buien", 82:"Zware buien", 85:"Sneeuwbuien", 86:"Zware sneeuwbuien", 95:"Onweer", 96:"Onweer met hagel", 99:"Onweer met hagel" };
+const WOLK = '<path d="M8 22h15a5 5 0 0 0 .6-9.96A7.5 7.5 0 0 0 9.4 13.1 4.6 4.6 0 0 0 8 22z"/>';
+function ikoon(c, nacht) {
+  const kop = '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">', eind = "</svg>";
+  const zon = (cx, cy, r) => `<circle cx="${cx}" cy="${cy}" r="${r}"/>` + Array.from({ length: 8 }, (_, i) => { const a = i * Math.PI / 4; return `<line x1="${(cx + Math.cos(a) * (r + 3)).toFixed(1)}" y1="${(cy + Math.sin(a) * (r + 3)).toFixed(1)}" x2="${(cx + Math.cos(a) * (r + 6)).toFixed(1)}" y2="${(cy + Math.sin(a) * (r + 6)).toFixed(1)}"/>`; }).join("");
+  if (c <= 1) return nacht ? `${kop}<path d="M22 19.5A9 9 0 1 1 12.5 8 7 7 0 0 0 22 19.5z"/>${eind}` : `${kop}${zon(16, 16, 5)}${eind}`;
+  if (c === 2) return `${kop}${nacht ? '<path d="M14 6.5A5.5 5.5 0 1 0 19.5 13 4.5 4.5 0 0 1 14 6.5z"/>' : zon(11, 10, 3.5)}${WOLK}${eind}`;
+  if (c === 3) return `${kop}${WOLK}${eind}`;
+  if (c === 45 || c === 48) return `${kop}<line x1="6" y1="11" x2="26" y2="11"/><line x1="4" y1="16" x2="24" y2="16"/><line x1="8" y1="21" x2="28" y2="21"/>${eind}`;
+  if (c >= 95) return `${kop}${WOLK}<path d="M16 22l-3 5h5l-2 4" stroke-width="1.8"/>${eind}`;
+  if ((c >= 71 && c <= 77) || c === 85 || c === 86) return `${kop}${WOLK}<circle cx="11" cy="27" r=".8"/><circle cx="16" cy="29" r=".8"/><circle cx="21" cy="27" r=".8"/>${eind}`;
+  return `${kop}${WOLK}<line x1="11" y1="25" x2="9.5" y2="29"/><line x1="16.5" y1="25" x2="15" y2="29"/><line x1="22" y1="25" x2="20.5" y2="29"/>${eind}`;
+}
+const graden = n => (n < 0 ? "\u2212" : "") + Math.abs(n) + "\u00B0";
+function weerHTML(k, t) {
+  const n = k.nu, uur = new Date(nu()).getHours(), nacht = uur < 7 || uur >= 20;
+  const dagen = k.dagen.map(d => `<div class="dagrij"><span class="dag">${DAGEN[d.d]}</span>${ikoon(d.c, false)}<span class="gr">${graden(d.max)}<small>${graden(d.min)}</small></span></div>`).join("");
+  return `${lagen(t)}<div class="titelrij"><span class="titel">Weer</span><span class="sub"><b>${esc(k.plaats)}</b>nu</span></div>
+    <div class="weer"><div class="weer-nu"><div class="temp">${graden(n.t)}</div>
+      <div class="oms">${ikoon(n.c, nacht)}<span>${esc(WEERTEKST[n.c] || "")}</span></div>
+      <div class="det">Voelt als ${graden(n.voelt)} \u00B7 wind ${n.wind} km/u<br>Vandaag ${graden(n.max)} / ${graden(n.min)} \u00B7 ${n.kans}% kans op regen</div></div>
+      <div class="weer-dagen">${dagen}</div></div>`;
 }
 
 function lagen(t) {
@@ -241,7 +294,9 @@ function teken() {
   const k = volgorde[plek], t = THEMA[k.id] || THEMA._standaard;
   const css = `--base:${t.base};--g1:${t.g1};--g2:${t.g2};--acc:${t.acc};--lijn:${t.lijn}`;
   let html;
-  if (k.type === "uitspraak") {
+  if (k.type === "weer") {
+    html = weerHTML(k, t);
+  } else if (k.type === "uitspraak") {
     html = `${lagen(t)}<div class="titelrij"><span class="titel">Uitspraak</span><span class="sub">van de dag</span></div>
       <div class="q-onder"><div class="citaat">${esc(k.tekst)}</div>
       <div class="wie"><span class="foto">${initialen(k.wie)}</span>${esc(k.wie)}</div></div>`;
